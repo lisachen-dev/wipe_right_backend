@@ -67,7 +67,7 @@ python-dotenv==1.0.1
     # via
     #   team-corgi (pyproject.toml)
     #   uvicorn
-python-multipart==0.0.17
+python-multipart==0.0.20
     # via
     #   team-corgi (pyproject.toml)
     #   fastapi

@@ -1,4 +1,3 @@
-````markdown
 # 🚀 FastAPI Project Setup Guide
 
 This guide will help you get the FastAPI server up and running using [`uv`](https://github.com/astral-sh/uv), a modern Python package manager and runtime.
@@ -14,7 +13,6 @@ If you don't already have `uv` installed, you can install it with one of the fol
 ```bash
 curl -Ls https://astral.sh/uv/install.sh | bash
 ```
-````
 
 ### Windows (PowerShell)
 
