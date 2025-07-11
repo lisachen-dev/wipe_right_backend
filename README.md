@@ -74,9 +74,13 @@ You can now build and test your FastAPI backend locally. Happy coding!
 
 ## Notes
 
-Adding a dependencies like so
-
+### Add Dependencies
 ```
 uv add dependency name
-
+```
+### Remove Dependences
+```
+uv pip uninstall package-name
+uv remove package-name
+uv sync
 ```
