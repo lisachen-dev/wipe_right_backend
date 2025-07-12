@@ -3,6 +3,8 @@ from uuid import uuid4
 from typing import Optional
 from sqlmodel import SQLModel, Field
 from datetime import datetime
+from app.utils.time import utc_now
+
 
 class Provider(SQLModel, table=True):
     __tablename__ = "providers"
@@ -10,5 +12,5 @@ class Provider(SQLModel, table=True):
     email: str
     phonenumber: Optional[int] = None
     password: str
-    created_at: Optional[datetime] = Field(default_factory=datetime.utcnow) # postgres fills these
-    updated_at: Optional[datetime] = Field(default_factory=datetime.utcnow) # postgres fills these
+    created_at: Optional[datetime] = Field(default=utc_now()) # postgres fills these
+    updated_at: Optional[datetime] = Field(default_factory=utc_now()) # postgres fills these
