@@ -1,7 +1,7 @@
 import uuid
 from mixins import TimestampMixin
 from typing import Optional
-from sqlmodel import Field, Column, DateTime
+from sqlmodel import Field
 from datetime import datetime
 
 class Booking (TimestampMixin, table=True):

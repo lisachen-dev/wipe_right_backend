@@ -1,6 +1,5 @@
 import uuid
 from mixins import TimestampMixin
-from typing import Optional
 from sqlmodel import Field
 
 class ProviderInventory (TimestampMixin, table=True):

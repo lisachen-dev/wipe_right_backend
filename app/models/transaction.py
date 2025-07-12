@@ -1,7 +1,7 @@
 import uuid
 import enum
 from mixins import TimestampMixin
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field
 
 class PaymentMethodEnum(str, enum.Enum):
     card = "card"
