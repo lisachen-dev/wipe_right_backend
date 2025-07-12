@@ -4,8 +4,8 @@ from typing import Optional
 from sqlmodel import SQLModel, Field, Column, DateTime, text
 from datetime import datetime
 
-class Provider(SQLModel, table=True):
-    __tablename__ = "providers"
+class Customer(SQLModel, table=True):
+    __tablename__ = "customers"
 
     id: Optional[uuid.UUID] = Field(default_factory=uuid4, primary_key=True)
     email: str
