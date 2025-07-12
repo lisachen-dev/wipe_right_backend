@@ -81,7 +81,7 @@ We're using [Supabase](https://supabase.com/) (PostgreSQL) as our database.
 
 For example, the `providers` table includes automatic timestamp tracking:
 
-```commandline
+```
 from sqlmodel import SQLModel, Field, Column, DateTime, text
 created_at: Optional[datetime] = Field(
         default=None,
