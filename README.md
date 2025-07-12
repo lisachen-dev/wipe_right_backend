@@ -69,7 +69,18 @@ Or hold `Cmd` (Mac) or `Ctrl` (Windows/Linux) and click the link in your termina
 
 ## Step 5: 🔐 Configure Environment Variables
 
-We use a `.env` file to manage configuration, like database URLs. See `.env.example` to get started.
+We use a `.env` file to manage configuration, like database URLs.
+1. Go to **Supabase > Database > Connect**
+  * ![img.png](img.png)
+
+2. In the modal that appears, look for the **Direct Connection** section at the top:
+  * ![img_1.png](img_1.png)
+
+3. Use the `.env_example` file as a template to create your own `.env`.
+
+4. Set the `DATABASE_URL` environment variable using:
+    - The **DB password**
+    - The **hostname** shown under **Direct Connection**
 
 ## 🧱 Step 6. Database & Model Setup
 
