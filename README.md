@@ -27,7 +27,7 @@ Alternatively, check out the [official uv installation docs](https://github.com/
 ## 🧪 Step 2: Create a Virtual Environment and Run the App
 
 ```bash
-uv run main.py
+uv run app/main.py
 ```
 
 > This will automatically create a `.venv` folder for your project if one doesn't already exist.
@@ -51,7 +51,7 @@ This installs everything listed in `requirements.txt` and locks them using `uv.l
 Start the FastAPI development server to run your server:
 
 ```bash
-uv run uvicorn main:app --reload
+uv run uvicorn app.main:app --reload
 ```
 
 ---
@@ -64,6 +64,15 @@ http://127.0.0.1:8000
 ```
 
 Or hold `Cmd` (Mac) or `Ctrl` (Windows/Linux) and click the link in your terminal.
+
+### 📚 Access the API Docs (Swagger UI)
+
+Once the server is running, FastAPI auto-generates interactive API docs at:
+- Swagger UI: [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs)
+- ReDoc: [`http://127.0.0.1:8000/redoc`](http://127.0.0.1:8000/redoc)
+
+These docs let you test endpoints directly in the browser — super helpful during development.
+
 
 ---
 
