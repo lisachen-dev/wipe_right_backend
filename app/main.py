@@ -1,30 +1,24 @@
-from pydantic import BaseModel
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
-
+from app.routers import inventory_item
 
 app = FastAPI()
+router = APIRouter()
 
-# Not safe! Add your own allowed domains
-origins = [
-    "*",
-] 
-
+# CORS Config - update for production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"], # Replace with specific domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Define what you will receiving in request
-class TypePayload(BaseModel):
-    content: str
+# Router Registrations
+app.include_router(inventory_item.router)
 
-# Example GET route for app
+# Root Route
 @app.get("/")
-def read_root():
-    return {"Message": "Hello World! FastAPI is working."}
-
+async def read_root():
+    return {"Message": "Hello World. I am home."}
