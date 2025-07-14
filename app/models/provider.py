@@ -1,4 +1,5 @@
-from mixins import TimestampMixin
+import uuid
+from app.models.mixins import TimestampMixin
 from typing import Optional
 from sqlmodel import Field
 
@@ -7,4 +8,4 @@ class Provider (TimestampMixin, table=True):
 
     email: str = Field(nullable=False)
     phonenumber: Optional[int] = None
-    password: str = Field(nullable=False)
+    user_id: uuid.UUID = Field(index=True) # handled in supabase
