@@ -1,5 +1,3 @@
-import uuid
-
 from app.models.mixins import TimestampMixin
 from typing import Optional
 from sqlmodel import SQLModel, Field
