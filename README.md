@@ -24,17 +24,7 @@ Alternatively, check out the [official uv installation docs](https://github.com/
 
 ---
 
-## 🧪 Step 2: Create a Virtual Environment and Run the App
-
-```bash
-uv run app/main.py
-```
-
-> This will automatically create a `.venv` folder for your project if one doesn't already exist.
-
----
-
-## 📥 Step 3: Install Dependencies
+## 📥 Step 2: Install Dependencies
 
 Install the project dependencies using:
 
@@ -46,13 +36,14 @@ This installs everything listed in `requirements.txt` and locks them using `uv.l
 
 ---
 
-## 🖥️ Step 4: Run the Server
+## 🖥️ Step 3: Run the Server
 ### Start the Server
 Start the FastAPI development server to run your server:
 
 ```bash
 uv run uvicorn app.main:app --reload
 ```
+> This will automatically create a `.venv` folder for your project if one doesn't already exist.
 
 ---
 
@@ -85,7 +76,7 @@ _This is super helpful during development to verify everything is working as exp
 
 ---
 
-## Step 5: 🔐 Configure Environment Variables
+## Step 4: 🔐 Configure Environment Variables
 
 We use a `.env` file to manage configuration, like database URLs.
 1. Go to **Supabase > Database > Connect**
@@ -100,7 +91,7 @@ We use a `.env` file to manage configuration, like database URLs.
     - The **DB password**
     - The **hostname** shown under **Direct Connection**
 
-## 🧱 Step 6. Database & Model Setup
+## 🧱 Step 5. Database & Model Setup
 
 We're using [Supabase](https://supabase.com/) (PostgreSQL) as our database.
 
