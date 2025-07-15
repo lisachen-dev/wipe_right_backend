@@ -95,7 +95,7 @@ We use a `.env` file to manage configuration, like database URLs.
 
 4. Set the `DATABASE_URL` environment variable using:
     - The **DB password**
-    - The **hostname** shown under **Direct Connection**
+    - The **hostname** shown under **Transaction Pooler**
 
 ---
 
