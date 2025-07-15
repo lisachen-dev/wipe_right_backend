@@ -29,6 +29,7 @@ dependencies = [
     "pydantic-core==2.20.1",
     "pygments==2.19.2",
     "python-dotenv==1.0.1",
+    "pyjwt==2.10.1",
     "python-multipart==0.0.20",
     "pyyaml==6.0.2",
     "rich==14.0.0",

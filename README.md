@@ -80,18 +80,65 @@ _This is super helpful during development to verify everything is working as exp
 
 We use a `.env` file to manage configuration, like database URLs.
 1. Go to **Supabase > Database > Connect**
-  * ![img.png](app/img/img.png)
+  * ![img.png](app/img/supabase_database_connect.png)
 
 2. In the modal that appears, look for the **Direct Connection** section at the top:
-  * ![img_1.png](app/img/img_1.png)
+  * ![img_1.png](app/img/supabase_api_token_temp.png)
 
-3. Use the `.env_example` file as a template to create your own `.env`.
+3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
 
 4. Set the `DATABASE_URL` environment variable using:
     - The **DB password**
     - The **hostname** shown under **Direct Connection**
 
-## 🧱 Step 5. Database & Model Setup
+---
+
+## 🔑 Step 5. 🔐 Authentication (JWT) Setup
+
+We're using Supabase's built-in authentication system to manage users (both customers and providers). Supabase issues a JWT (JSON Web Token) whenever a user signs in — we decode this token to identify the user in our FastAPI app.
+
+### ➕ Add the JWT Secret
+
+> To enable this, you must set the SUPABASE_JWT_SECRET in your .env file. This secret allows FastAPI to validate and decode incoming tokens securely.
+
+To get your secret:
+1. Go to your Supabase dashboard
+
+2. Navigate to Project Settings → API
+
+![img.png](app/img/supabase_project_settings.png)
+
+Use the service_role token that's provided to the right of this screenshot (just out of picture)
+![img_2.png](app/img/supabase_api_keys.png)
+
+3. Look for the value under JWT Secret
+
+4. Add it to your `.env` file as shown in the `.env_example`
+
+>Note: This is the same secret Supabase uses to sign tokens, so your backend can safely verify them.
+
+
+> ### ⚠️ Auth Routes Not Fully Functional Yet
+> Endpoints like POST /customers, POST /providers, and any routes using /me rely on a valid Authorization header with a Supabase-issued JWT. 
+> 
+> ✅ These routes are secured and scoped to the logged-in user.
+>
+> ❌ However, full login functionality is not yet implemented — we’ll hook this up once we add Google Auth via Supabase.
+>
+Until then, customer and provider routes that depend on authentication won’t work through Swagger or normal API calls.
+For now, we've temporarily faked a static UUID in development to simulate a logged-in user. You can adjust this inside:
+
+### app/utils/auth.py
+
+### ⚠️ TEMPORARY: This fakes a logged-in user for Swagger testing
+```
+async def get_current_user() -> UUID:
+return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+```
+
+---
+
+## 🧱 Step 6. Database & Model Setup
 
 We're using [Supabase](https://supabase.com/) (PostgreSQL) as our database.
 
