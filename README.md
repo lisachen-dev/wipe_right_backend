@@ -32,6 +32,12 @@ Install the project dependencies using:
 uv add -r requirements.txt
 ```
 
+Run this command to sync and update/remove dependencies as indicated in both the `requirements.txt` and `pyproject.toml`
+
+```bash
+uv sync
+```
+
 This installs everything listed in `requirements.txt` and locks them using `uv.lock` for reproducibility.
 
 ---

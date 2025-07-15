@@ -1,5 +1,6 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 
 from app.routers import (
     address,
@@ -40,7 +41,7 @@ app.include_router(service_inventory.router)
 app.include_router(status_update.router)
 app.include_router(transaction.router)
 
-# Root Route routes to swagger api for now
-@app.get("/docs")
-async def read_root():
-    return {"Message": "Hello World. I am home."}
+# Root Route redirects to Swagger docs
+@app.get("/", include_in_schema=False)
+async def redirect_to_docs():
+    return RedirectResponse(url="/docs")
