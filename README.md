@@ -71,7 +71,16 @@ Once the server is running, FastAPI auto-generates interactive API docs at:
 - Swagger UI: [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs)
 - ReDoc: [`http://127.0.0.1:8000/redoc`](http://127.0.0.1:8000/redoc)
 
-These docs let you test endpoints directly in the browser — super helpful during development.
+#### To test an endpoint:
+1. Go to `/docs`
+2. Scroll to the endpoint you want to test
+3. Click on it to expand
+4. Click the "Try it out" button on the right
+5. Enter any required parameters
+6. Click "Execute"
+7. Scroll down to view the response from the server
+
+_This is super helpful during development to verify everything is working as expected._
 
 
 ---
