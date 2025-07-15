@@ -146,31 +146,6 @@ We're using [Supabase](https://supabase.com/) (PostgreSQL) as our database.
 - Supabase hosts our Postgres database and helps manage performance behind the scenes.
 - Settings like the database URL are stored in a `.env` file (as seen in the previous step).
 
-### ⏱️ TimestampMixin
-
-We've taken common fields like `id`, `created_at`, and `updated_at` and moved them into a reusable class called `TimestampMixin`.
-
-This helps keep our models cleaner and avoids repeating the same code in every table.
-
-```python
-class TimestampMixin(SQLModel):
-    id: Optional[uuid.UUID] = Field(default_factory=uuid4, primary_key=True)
-    created_at: Optional[datetime] = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')")
-        )
-    )
-    updated_at: Optional[datetime] = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')")
-        )
-    )
-```
-
 ## 🧪 [Optional] Seed the Database
 To test your database connection or seed example data (e.g. into the `providers` table), you can run the following:
 
