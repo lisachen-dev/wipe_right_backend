@@ -123,23 +123,49 @@ Use the service_role token that's provided to the right of this screenshot (just
 
 >Note: This is the same secret Supabase uses to sign tokens, so your backend can safely verify them.
 
+### ⚠️ Auth Routes Not Fully Functional Yet
 
-> ### ⚠️ Auth Routes Not Fully Functional Yet
-> Endpoints like POST /customers, POST /providers, and any routes using /me rely on a valid Authorization header with a Supabase-issued JWT. 
-> 
-> ✅ These routes are secured and scoped to the logged-in user.
->
-> ❌ However, full login functionality is not yet implemented — we’ll hook this up once we add Google Auth via Supabase.
->
-Until then, customer and provider routes that depend on authentication won’t work through Swagger or normal API calls.
-For now, we've temporarily faked a static UUID in development to simulate a logged-in user. You can adjust this inside:
+Endpoints like `POST /customers`, `POST /providers`, and any route under `/me` require a valid `Authorization` header with a Supabase-issued JWT.
 
-### app/utils/auth.py
+✅ These routes are scoped to the logged-in user  
+❌ Full login functionality (e.g. Google Auth) is **not yet implemented**
 
-### ⚠️ TEMPORARY: This fakes a logged-in user for Swagger testing
-```
+Until auth is hooked up, these endpoints won’t work through normal API calls or Swagger UI.
+
+---
+
+### 🧪 For Testing: Use [`/docs`](http://127.0.0.1:8000/docs)
+
+To explore the API interactively, visit [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs) once your server is running.
+
+We recommend starting with the `/inventory_items` routes — they **do not require authentication** and are safe to test directly via Swagger UI.
+
+On the Swagger UI page, expand the `inventory_items` section
+![img.png](app/img/swagger_inventory_items.png)
+
+Swagger makes you work, so click **"Try it out"**
+![img.png](app/img/swagger_try_it_out.png)
+
+Select the gigantic **"Execute"** button
+![img.png](app/img/swagger_execute.png)
+
+You know it works if you are able to pull open the same information as what shows on the `inventory_items` table in Supabase!
+![img.png](app/img/swagger_inventory_items_200.png)
+
+> Happy Swaggering!
+
+---
+
+### 🔧 Dev-Only Auth Workaround
+
+To simulate a logged-in user during local development, we've hardcoded a static UUID as a placeholder:
+
+```python
+# app/utils/auth.py
+
 async def get_current_user() -> UUID:
-return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+    return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+
 ```
 
 ---
