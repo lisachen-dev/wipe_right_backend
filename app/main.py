@@ -19,7 +19,8 @@ from app.routers import (
 app = FastAPI()
 router = APIRouter()
 
-# CORS Config - update for production
+# TODO CORS Config - update for production
+# noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # Replace with specific domains
