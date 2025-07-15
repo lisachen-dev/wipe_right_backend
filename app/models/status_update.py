@@ -1,6 +1,5 @@
 import enum
-import uuid
-from uuid import uuid4
+from uuid import UUID, uuid4
 from typing import Optional
 from sqlmodel import SQLModel, Field, Column, DateTime, text
 from datetime import datetime
@@ -12,15 +11,24 @@ class StatusEnum(str, enum.Enum):
     completed = "completed"
     cancelled = "cancelled"
 
-class StatusUpdate (SQLModel, table=True):
+class StatusUpdateBase(SQLModel):
+    booking_id: UUID
+    status: StatusEnum
+
+class StatusUpdate(StatusUpdateBase, table=True):
     __tablename__ = "status_updates"
 
-    id: Optional[uuid.UUID] = Field(default_factory=uuid4, primary_key=True)
-    booking_id: uuid = Field(foreign_key="bookings.id", nullable=False)
-    status: StatusEnum = Field(nullable=False)
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
             DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')")
-     ))
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+class StatusUpdateCreate(StatusUpdateBase):
+    pass
+
+class StatusUpdateUpdate(SQLModel):
+    status: Optional[StatusEnum] = None

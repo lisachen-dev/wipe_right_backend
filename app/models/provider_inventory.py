@@ -1,9 +1,16 @@
 import uuid
-from mixins import TimestampMixin
-from sqlmodel import Field
+from sqlmodel import SQLModel, Field
 
-class ProviderInventory (TimestampMixin, table=True):
+class ProviderInventory (SQLModel, table=True):
     __tablename__ = "provider_inventory"
-    provider: uuid.UUID = Field(foreign_key="providers.id", nullable=False)
-    inventory_item_id: uuid.UUID = Field(foreign_key="inventory_items.id", nullable=False)
-    quantity_available: int = Field(nullable=False)
+
+    provider: uuid.UUID
+    inventory_item_id: uuid.UUID
+    quantity_available: int
+
+class ProviderInventoryCreate(SQLModel):
+    inventory_item_id: uuid.UUID
+    quantity_available: int = Field(gt=0)
+
+class ProviderInventoryUpdate(SQLModel):
+    quantity_available: int

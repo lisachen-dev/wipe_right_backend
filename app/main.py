@@ -1,7 +1,7 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Header
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import inventory_item
+from app.routers import customer, inventory_item
 
 app = FastAPI()
 router = APIRouter()
@@ -17,6 +17,7 @@ app.add_middleware(
 
 # Router Registrations
 app.include_router(inventory_item.router)
+app.include_router(customer.router)
 
 # Root Route
 @app.get("/")

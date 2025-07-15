@@ -1,11 +1,40 @@
-import uuid
-from mixins import TimestampMixin
 from typing import Optional
-from sqlmodel import Field
+from uuid import UUID, uuid4
+from datetime import datetime
+from sqlmodel import SQLModel, Field, Column, DateTime, text
 
-class Customer (TimestampMixin, table=True):
+class CustomerBase(SQLModel):
+    email: str
+    phone_number: Optional[int] = None
+
+# Full model for DB
+class Customer(SQLModel, CustomerBase, table=True):
     __tablename__ = "customers"
 
-    email: str = Field(nullable=False)
-    phonenumber: Optional[int] = None
-    user_id: uuid.UUID = Field(index=True) # handled in supabase
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    user_id: UUID
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+
+# Schema for create
+class CustomerCreate(SQLModel):
+    email: str
+    phone_number: Optional[int] = None
+    user_id: UUID
+
+# Schema for update
+class CustomerUpdate(SQLModel):
+    email: Optional[str] = None
+    phone_number: Optional[int] = None

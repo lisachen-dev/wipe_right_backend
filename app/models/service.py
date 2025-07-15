@@ -1,13 +1,34 @@
-import uuid
 from typing import Optional
-from sqlmodel import Field
-from mixins import TimestampMixin
+from uuid import UUID, uuid4
+from datetime import datetime
+from sqlmodel import SQLModel, Field, Column, DateTime, text
 
-class Service(TimestampMixin, table=True):
+class ServiceBase(SQLModel):
+    service_title: str
+    service_description: Optional[str] = None
+    pricing: float
+    duration: int  # in minutes
+
+class Service(SQLModel, ServiceBase, table=True):
     __tablename__ = "services"
 
-    provider_id: uuid.UUID = Field(foreign_key="providers.id", nullable=False)
-    service_title: str = Field(nullable=False)
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+    provider_id: UUID = Field(foreign_key="providers.id", nullable=False)
+
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+class ServiceCreate(ServiceBase):
+    provider_id: UUID
+
+class ServiceUpdate(SQLModel):
+    service_title: Optional[str] = None
     service_description: Optional[str] = None
-    pricing: float = Field(nullable=False)
-    duration: int = Field(nullable=False)
+    pricing: Optional[float] = None
+    duration: Optional[int] = None

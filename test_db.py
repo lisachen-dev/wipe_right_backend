@@ -5,7 +5,7 @@ from app.models.provider import Provider
 def seed_provider():
     new_provider = Provider(
         email= "gottacatchemall",
-        phonenumber= 1234567890,
+        phone_number= 1234567890,
         user_id="2b07e53d-e98d-42d0-a2d3-d5c0f805f0fb"
     )
     with Session(engine) as session:

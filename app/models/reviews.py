@@ -1,12 +1,38 @@
-import uuid
-from mixins import TimestampMixin
 from typing import Optional
-from sqlmodel import Field
+from uuid import uuid4, UUID
+from datetime import datetime
+from sqlmodel import SQLModel, Field, Column, DateTime, text
 
-class Review (TimestampMixin, table=True):
+class ReviewBase(SQLModel):
+    rating: int = Field(default=5, ge=1, le=5)
+    description: Optional[str] = None
+
+class Review(SQLModel, ReviewBase, table=True):
     __tablename__ = "reviews"
 
-    customer_id: uuid = Field(foreign_key="customers.id", nullable=False)
-    provider_id: uuid = Field(foreign_key="providers.id", nullable=False)
-    rating: int = Field(default=5, ge=1, le=5)
-    description: Optional[str] = Field(default=None)
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+
+    customer_id: UUID = Field(foreign_key="customers.id")
+    provider_id: UUID = Field(foreign_key="providers.id")
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+class ReviewCreate(ReviewBase):
+    customer_id: UUID
+    provider_id: UUID
+
+
+class ReviewUpdate(SQLModel):
+    rating: Optional[int] = Field(default=None, ge=1, le=5)
+    description: Optional[str] = None

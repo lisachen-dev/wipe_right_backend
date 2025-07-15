@@ -1,13 +1,37 @@
-import uuid
 import enum
-from mixins import TimestampMixin
-from sqlmodel import Field
+from uuid import UUID, uuid4
+from typing import Optional
+from datetime import datetime
+from sqlmodel import SQLModel, Field, Column, DateTime, text
 
 class PaymentMethodEnum(str, enum.Enum):
     card = "card"
 
-class Transaction(TimestampMixin, table=True):
+class TransactionBase(SQLModel):
+    booking_id: UUID
+    payment_method: PaymentMethodEnum
+
+class Transaction(SQLModel, TransactionBase, table=True):
     __tablename__ = "transactions"
 
-    booking_id: uuid.UUID = Field(foreign_key="bookings.id", nullable=False)
-    payment_method: PaymentMethodEnum = Field(nullable=False)
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
+
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True),
+            server_default=text("(now() AT TIME ZONE 'utc')"))
+    )
+
+class TransactionCreate(TransactionBase):
+    pass
+
+class TransactionUpdate(SQLModel):
+    payment_method: Optional[PaymentMethodEnum] = None
