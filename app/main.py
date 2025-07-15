@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Header
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import (
