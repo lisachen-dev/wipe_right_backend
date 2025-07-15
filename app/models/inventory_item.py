@@ -10,7 +10,7 @@ class InventoryItemsBase(SQLModel):
     unit: Optional[str] = None # e.g., "bottle", "piece"
     cost: float
 
-class InventoryItems (SQLModel, InventoryItemsBase, table=True):
+class InventoryItems (InventoryItemsBase, table=True):
     __tablename__ = "inventory_items"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

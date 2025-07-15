@@ -10,7 +10,7 @@ class AddressBase(SQLModel):
     state: str
     zip: str
 
-class Address(SQLModel, AddressBase, table=True):
+class Address(AddressBase, table=True):
     __tablename__ = "addresses"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

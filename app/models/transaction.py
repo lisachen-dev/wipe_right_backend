@@ -11,7 +11,7 @@ class TransactionBase(SQLModel):
     booking_id: UUID
     payment_method: PaymentMethodEnum
 
-class Transaction(SQLModel, TransactionBase, table=True):
+class Transaction(TransactionBase, table=True):
     __tablename__ = "transactions"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

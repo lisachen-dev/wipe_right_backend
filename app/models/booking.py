@@ -8,7 +8,7 @@ class BookingBase(SQLModel):
     service_notes: Optional[str] = None
     start_time: datetime
 
-class Booking(SQLModel, BookingBase, table=True):
+class Booking(BookingBase, table=True):
     __tablename__ = "bookings"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

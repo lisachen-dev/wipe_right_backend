@@ -9,7 +9,7 @@ class ServiceBase(SQLModel):
     pricing: float
     duration: int  # in minutes
 
-class Service(SQLModel, ServiceBase, table=True):
+class Service(ServiceBase, table=True):
     __tablename__ = "services"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

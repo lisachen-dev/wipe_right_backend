@@ -8,7 +8,7 @@ class ServiceInventoryBase(SQLModel):
     inventory_item_id: UUID
     quantity_required: int
 
-class ServiceInventory(SQLModel, ServiceInventoryBase, table=True):
+class ServiceInventory(ServiceInventoryBase, table=True):
     __tablename__ = "service_inventory"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

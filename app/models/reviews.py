@@ -7,7 +7,7 @@ class ReviewBase(SQLModel):
     rating: int = Field(default=5, ge=1, le=5)
     description: Optional[str] = None
 
-class Review(SQLModel, ReviewBase, table=True):
+class Review(ReviewBase, table=True):
     __tablename__ = "reviews"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

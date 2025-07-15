@@ -8,7 +8,7 @@ class ProviderBase(SQLModel):
     phone_number: Optional[int] = None
 
 # Full model for DB
-class Provider(SQLModel, ProviderBase, table=True):
+class Provider(ProviderBase, table=True):
     __tablename__ = "providers"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)

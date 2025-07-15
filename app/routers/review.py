@@ -2,9 +2,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.models.review import Review, ReviewCreate, ReviewUpdate
+from app.models.reviews import Review, ReviewCreate, ReviewUpdate
 from app.db.session import get_session
-from app.utils.auth import get_current_user
 from app.utils.crud_helpers import get_all, get_one, create_one, update_one, delete_one
 
 router = APIRouter(

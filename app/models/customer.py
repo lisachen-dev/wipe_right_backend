@@ -8,7 +8,7 @@ class CustomerBase(SQLModel):
     phone_number: Optional[int] = None
 
 # Full model for DB
-class Customer(SQLModel, CustomerBase, table=True):
+class Customer(CustomerBase, table=True):
     __tablename__ = "customers"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
