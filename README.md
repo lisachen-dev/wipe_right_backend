@@ -160,12 +160,11 @@ You know it works if you are able to pull open the same information as what show
 
 To simulate a logged-in user during local development, we've hardcoded a static UUID as a placeholder:
 
-```python
+```
 # app/utils/auth.py
 
 async def get_current_user() -> UUID:
     return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
-
 ```
 
 ---
