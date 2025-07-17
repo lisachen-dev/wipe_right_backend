@@ -42,7 +42,24 @@ This installs everything listed in `requirements.txt` and locks them using `uv.l
 
 ---
 
-## 🖥️ Step 3: Run the Server
+## Step 3: 🔐 Configure Environment Variables
+
+We use a `.env` file to manage configuration, like database URLs.
+1. Go to **Supabase > Database > Connect**
+  * ![img.png](app/img/supabase_database_connect.png)
+
+2. In the modal that appears, look for the **Direct Connection** section at the top:
+  * ![img_1.png](app/img/supabase_api_token_temp.png)
+
+3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
+
+4. Set the `DATABASE_URL` environment variable using:
+    - The **DB password**
+    - The **hostname** shown under **Transaction Pooler**
+
+---
+
+## 🖥️ Step 4: Run the Server
 ### Start the Server
 Start the FastAPI development server to run your server:
 
@@ -79,23 +96,6 @@ Once the server is running, FastAPI auto-generates interactive API docs at:
 
 _This is super helpful during development to verify everything is working as expected._
 
-
----
-
-## Step 4: 🔐 Configure Environment Variables
-
-We use a `.env` file to manage configuration, like database URLs.
-1. Go to **Supabase > Database > Connect**
-  * ![img.png](app/img/supabase_database_connect.png)
-
-2. In the modal that appears, look for the **Direct Connection** section at the top:
-  * ![img_1.png](app/img/supabase_api_token_temp.png)
-
-3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
-
-4. Set the `DATABASE_URL` environment variable using:
-    - The **DB password**
-    - The **hostname** shown under **Transaction Pooler**
 
 ---
 
