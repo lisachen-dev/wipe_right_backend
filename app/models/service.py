@@ -4,13 +4,14 @@ from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, DateTime, text
 from enum import Enum
 
-class ServiceEnum( Enum): 
-    HOUSE_CLEANING = "House Cleaning"
-    LAWN_AND_GARDEN = "Lawn & Garden"
-    HANDYMAN_AND_REPAIRS = "Handyman & Repairs"
-    EXTERIOR_CLEANING = "Exterior Cleaning"
-    SPECIALIZED_CLEANING = "Specialized Cleaning"
-    ASSEMBLY_AND_INSTALLATION = "Assembly & Installation"
+
+class ServiceEnum(Enum):
+    HOUSE_CLEANING = "housecleaning"
+    LAWN_AND_GARDEN = "lawnandgarden"
+    HANDYMAN_AND_REPAIRS = "handymanandrepairs"
+    EXTERIOR_CLEANING = "exteriorcleaning"
+    SPECIALIZED_CLEANING = "specializedcleaning"
+    ASSEMBLY_AND_INSTALLATION = "assemblyandinstallation"
 
 
 class ServiceBase(SQLModel):
@@ -18,7 +19,8 @@ class ServiceBase(SQLModel):
     service_description: Optional[str] = None
     pricing: float
     duration: int  # in minutes
-    category: str
+    category: Optional[str]
+
 
 class Service(ServiceBase, table=True):
     __tablename__ = "services"
@@ -28,15 +30,17 @@ class Service(ServiceBase, table=True):
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
     )
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
     )
+
 
 class ServiceCreate(ServiceBase):
     provider_id: UUID
+
 
 class ServiceUpdate(SQLModel):
     service_title: Optional[str] = None
