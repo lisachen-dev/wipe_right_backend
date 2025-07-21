@@ -13,7 +13,7 @@ class StatusEnum(str, enum.Enum):
 
 class StatusUpdateBase(SQLModel):
     booking_id: UUID
-    status: StatusEnum
+    status: Optional[StatusEnum]
 
 class StatusUpdate(StatusUpdateBase, table=True):
     __tablename__ = "status_updates"
