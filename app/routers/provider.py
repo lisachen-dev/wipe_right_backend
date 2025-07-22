@@ -2,7 +2,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.models.provider import Provider, ProviderCreate, ProviderUpdate
+from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail
+from app.models.service import Service
 from app.db.session import get_session
 from app.utils.auth import get_current_user
 from app.utils.crud_helpers import get_all, get_one, create_one, update_one, delete_one
@@ -49,6 +50,25 @@ async def read_own_provider(
 
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
+    return provider
+
+# Return provider details by ID
+@router.get("/{provider_id}", response_model=Provider)
+async def get_provider_details(
+    provider_id: UUID,
+    session: Session = Depends(get_session)
+):
+    provider = session.exec(
+        select(Provider).where(Provider.id == provider_id)
+    ).first()
+
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+
+    # services = session.exec(
+    #     select(Service).where(Service.provider_id == provider_id)
+    # ).all()
+
     return provider
 
 # AUTH: Update current user's provider record

@@ -1,7 +1,10 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
+from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
+
+if TYPE_CHECKING:
+    from app.modes.provider import Provider
 from enum import Enum
 
 
@@ -37,6 +40,7 @@ class Service(ServiceBase, table=True):
         sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
     )
 
+    provider: "Provider" = Relationship(back_populates = "services")
 
 class ServiceCreate(ServiceBase):
     provider_id: UUID
@@ -47,3 +51,6 @@ class ServiceUpdate(SQLModel):
     service_description: Optional[str] = None
     pricing: Optional[float] = None
     duration: Optional[int] = None
+
+class ServiceRead(ServiceBase):
+    id: UUID
