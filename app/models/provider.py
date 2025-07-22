@@ -56,3 +56,5 @@ class ProviderResponseDetail(SQLModel):
     phone_number: Optional[str] = None
     services: list[ServiceRead]
     reviews: list[ReviewRead]
+    review_count: int
+    average_rating: Optional[float] = None

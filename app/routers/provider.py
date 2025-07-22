@@ -1,9 +1,10 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 
 from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail
 from app.models.service import Service
+from app.models.reviews import Review
 from app.db.session import get_session
 from app.utils.auth import get_current_user
 from app.utils.crud_helpers import get_all, get_one, create_one, update_one, delete_one
@@ -65,7 +66,29 @@ async def get_provider_details(
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
 
-    return provider
+    recent_reviews = session.exec(
+        select(Review)
+        .where(Review.provider_id == provider_id)
+        .order_by(Review.created_at.desc())
+        .limit(3)
+    ).all()
+
+    review_data = session.exec(
+        select(
+            func.count(Review.id).label("count"),
+            func.avg(Review.rating).label("average")
+        ).where(Review.provider_id == provider_id)
+    ).first()
+
+    return ProviderResponseDetail(
+        id=provider.id,
+        email=provider.email,
+        phone_number=provider.phone_number,
+        services=provider.services,
+        reviews=recent_reviews,
+        review_count=review_data.count or 0,
+        average_rating=float(review_data.average) if review_data.average else None
+    )
 
 # AUTH: Update current user's provider record
 @router.patch("/me", response_model=Provider)
