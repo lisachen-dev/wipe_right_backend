@@ -46,10 +46,10 @@ This installs everything listed in `requirements.txt` and locks them using `uv.l
 
 We use a `.env` file to manage configuration, like database URLs.
 1. Go to **Supabase > Database > Connect**
-  * ![img.png](app/img/supabase_database_connect.png)
+  * ![Supabase Database Connect](app/img/supabase_database_connect.png)
 
 2. In the modal that appears, look for the **Direct Connection** section at the top:
-  * ![img_1.png](app/img/supabase_api_token_temp.png)
+  * ![Supabase API Token](app/img/supabase_api_token_temp.png)
 
 3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
 
@@ -112,10 +112,10 @@ To get your secret:
 
 2. Navigate to Project Settings → API
 
-![img.png](app/img/supabase_project_settings.png)
+![Supabase Project Settings](app/img/supabase_project_settings.png)
 
 Use the service_role token that's provided to the right of this screenshot (just out of picture)
-![img_2.png](app/img/supabase_api_keys.png)
+![Supabase API Keys](app/img/supabase_api_keys.png)
 
 3. Look for the value under JWT Secret
 
@@ -141,16 +141,16 @@ To explore the API interactively, visit [`http://127.0.0.1:8000/docs`](http://12
 We recommend starting with the `/inventory_items` routes — they **do not require authentication** and are safe to test directly via Swagger UI.
 
 On the Swagger UI page, expand the `inventory_items` section
-![img.png](app/img/swagger_inventory_items.png)
+![Swagger Inventory Items](app/img/swagger_inventory_items.png)
 
 Swagger makes you work, so click **"Try it out"**
-![img.png](app/img/swagger_try_it_out.png)
+![Swagger Try it out button](app/img/swagger_try_it_out.png)
 
 Select the gigantic **"Execute"** button
-![img.png](app/img/swagger_execute.png)
+![Swagger Execute](app/img/swagger_execute.png)
 
 You know it works if you are able to pull open the same information as what shows on the `inventory_items` table in Supabase!
-![img.png](app/img/swagger_inventory_items_200.png)
+![Swagger Inventory Items 200](app/img/swagger_inventory_items_200.png)
 
 > Happy Swaggering!
 
@@ -187,6 +187,8 @@ uv run test_db.py
 ### ✅ You're Ready!
 
 You can now build and test your FastAPI backend locally. Happy coding!
+
+![Corgi Butt](app/img/b1.png)
 
 ---
 
