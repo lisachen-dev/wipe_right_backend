@@ -3,9 +3,10 @@ from uuid import UUID, uuid4
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
 
-if TYPE_CHECKING:
-    from app.modes.provider import Provider
 from enum import Enum
+
+if TYPE_CHECKING:
+    from app.models.provider import Provider
 
 
 class ServiceEnum(Enum):

@@ -53,7 +53,7 @@ async def read_own_provider(
     return provider
 
 # Return provider details by ID
-@router.get("/{provider_id}", response_model=Provider)
+@router.get("/{provider_id}", response_model=ProviderResponseDetail)
 async def get_provider_details(
     provider_id: UUID,
     session: Session = Depends(get_session)
@@ -64,10 +64,6 @@ async def get_provider_details(
 
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
-
-    # services = session.exec(
-    #     select(Service).where(Service.provider_id == provider_id)
-    # ).all()
 
     return provider
 

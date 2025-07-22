@@ -4,9 +4,11 @@ from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
 
 from app.models.service import ServiceRead
+from app.models.reviews import ReviewRead
 
 if TYPE_CHECKING:
-    from app.modes.service import Service
+    from app.models.service import Service
+    from app.models.service import Review
 
 class ProviderBase(SQLModel):
     email: str
@@ -32,8 +34,8 @@ class Provider(ProviderBase, table=True):
             server_default=text("(now() AT TIME ZONE 'utc')"))
     )
 
-    # add relationship to services
     services: list["Service"] = Relationship(back_populates = "provider")
+    reviews: list["Review"] = Relationship(back_populates = "provider")
 
 
 # Schema for create
@@ -53,3 +55,4 @@ class ProviderResponseDetail(SQLModel):
     email: str
     phone_number: Optional[str] = None
     services: list[ServiceRead]
+    reviews: list[ReviewRead]

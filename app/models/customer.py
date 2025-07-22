@@ -1,7 +1,7 @@
 from typing import Optional
 from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
+from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
 
 class CustomerBase(SQLModel):
     email: str
