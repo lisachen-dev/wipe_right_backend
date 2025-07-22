@@ -6,6 +6,7 @@ from sqlmodel import SQLModel, Field, Column, DateTime, text
 class ProviderBase(SQLModel):
     first_name: str
     last_name: str
+    company_name: Optional[str] = None
     email: str
     phone_number: Optional[int] = None
 
