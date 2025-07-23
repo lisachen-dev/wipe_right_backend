@@ -38,6 +38,13 @@ async def create_provider(
 
     return create_one(session, Provider, provider_data)
 
+# Return all providers
+@router.get("/all", response_model=list[Provider])
+async def get_all_providers(
+    session: Session = Depends(get_session)
+):
+    return get_all(session, Provider)
+
 # AUTH: Return current user's provider record
 @router.get("/me", response_model=Provider)
 async def read_own_provider(
