@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select, func
 
 from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail
-from app.models.service import Service
 from app.models.reviews import Review
 from app.db.session import get_session
 from app.utils.auth import get_current_user
@@ -66,6 +65,7 @@ async def get_provider_details(
     provider_id: UUID,
     session: Session = Depends(get_session)
 ):
+    
     provider = session.exec(
         select(Provider).where(Provider.id == provider_id)
     ).first()

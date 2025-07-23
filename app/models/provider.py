@@ -8,11 +8,11 @@ from app.models.reviews import ReviewRead
 
 if TYPE_CHECKING:
     from app.models.service import Service
-    from app.models.service import Review
+    from app.models.reviews import Review
 
 class ProviderBase(SQLModel):
     email: str
-    phone_number: Optional[int] = None
+    phone_number: Optional[str] = None
 
 # Full model for DB
 class Provider(ProviderBase, table=True):
@@ -41,13 +41,13 @@ class Provider(ProviderBase, table=True):
 # Schema for create
 class ProviderCreate(SQLModel):
     email: str
-    phone_number: Optional[int] = None
+    phone_number: Optional[str] = None
     user_id: UUID
 
 # Schema for update
 class ProviderUpdate(SQLModel):
     email: Optional[str] = None
-    phone_number: Optional[int] = None
+    phone_number: Optional[str] = None
 
 class ProviderResponseDetail(SQLModel):
     id: UUID
