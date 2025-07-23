@@ -13,18 +13,18 @@ router = APIRouter(
 
 @router.get("/me")
 async def read_current_user_profile(
-        user_id: str = Depends(get_current_user_id),
+        supabase_user_id: str = Depends(get_current_user_id),
         session: Session = Depends(get_session)
 ):
     # Try customer
-    customer_statement = select(Customer).where(Customer.supabase_user_id == user_id)
+    customer_statement = select(Customer).where(Customer.supabase_user_id == supabase_user_id)
     db_customer: Customer | None = session.scalar(customer_statement)
 
     if db_customer:
         return {"role": "customer", "data": db_customer}
 
     # Try provider
-    provider_statement = select(Provider).where(Provider.user_id == user_id)
+    provider_statement = select(Provider).where(Provider.supabase_user_id == supabase_user_id)
     db_provider: Provider | None = session.scalar(provider_statement)
 
     if db_provider:
