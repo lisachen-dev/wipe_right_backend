@@ -12,7 +12,7 @@ class ProviderBase(SQLModel):
 # Full model for DB
 class Provider(ProviderBase, table=True):
     __tablename__ = "providers"
-    __table_args__ = (UniqueConstraint("auth_user_id"),)
+    __table_args__ = (UniqueConstraint("supabase_user_id"),)
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 

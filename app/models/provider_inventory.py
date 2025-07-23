@@ -10,7 +10,7 @@ class ProviderInventory (ProviderInventoryBase, table=True):
     __tablename__ = "provider_inventory"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    auth_user_id: UUID
+    supabase_user_id: UUID
     provider: UUID
     inventory_item_id: UUID
 

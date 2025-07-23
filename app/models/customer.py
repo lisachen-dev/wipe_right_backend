@@ -11,7 +11,7 @@ class CustomerBase(SQLModel):
 # Full model for DB
 class Customer(CustomerBase, table=True):
     __tablename__ = "customers"
-    __table_args__ = (UniqueConstraint("auth_user_id"),)
+    __table_args__ = (UniqueConstraint("supabase_user_id"),)
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
