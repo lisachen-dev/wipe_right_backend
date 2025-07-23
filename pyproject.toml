@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "annotated-types==0.7.0",
     "anyio==4.9.0",
+    "black>=25.1.0",
     "certifi==2025.7.9",
     "cffi==1.17.1",
     "cryptography==45.0.5",
@@ -38,6 +39,7 @@ dependencies = [
     "rich==14.0.0",
     "rich-toolkit==0.14.8",
     "rignore==0.5.1",
+    "ruff>=0.12.4",
     "sentry-sdk==2.32.0",
     "shellingham==1.5.4",
     "sniffio==1.3.1",
@@ -51,3 +53,25 @@ dependencies = [
     "watchfiles==1.1.0",
     "websockets==15.0.1",
 ]
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 80
+target-version = "py312"
+extend-select = ["I"]
+exclude = ["migrations", "__pycache__", ".venv"]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+docstring-code-format = true 
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[project.scripts]
+format-all = "black . && ruff check . --fix"
+lint-all = "ruff check ."

@@ -7,6 +7,8 @@ anyio==4.9.0
     #   httpx
     #   starlette
     #   watchfiles
+black>=25.1.0
+    # code formatter, opinionated
 certifi==2025.7.9
     # via
     #   httpcore
@@ -95,6 +97,8 @@ rich-toolkit==0.14.8
     #   fastapi-cloud-cli
 rignore==0.5.1
     # via fastapi-cloud-cli
+ruff>=0.12.4
+    # fast Python linter & formatter
 sentry-sdk==2.32.0
     # via fastapi-cloud-cli
 shellingham==1.5.4

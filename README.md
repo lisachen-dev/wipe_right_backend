@@ -24,7 +24,7 @@ Alternatively, check out the [official uv installation docs](https://github.com/
 
 ---
 
-## 📥 Step 2: Install Dependencies
+## Step 2: Install Dependencies
 
 Install the project dependencies using:
 
@@ -45,32 +45,39 @@ This installs everything listed in `requirements.txt` and locks them using `uv.l
 ## Step 3: 🔐 Configure Environment Variables
 
 We use a `.env` file to manage configuration, like database URLs.
+
 1. Go to **Supabase > Database > Connect**
-  * ![img.png](app/img/supabase_database_connect.png)
+
+* ![img.png](app/img/supabase_database_connect.png)
 
 2. In the modal that appears, look for the **Direct Connection** section at the top:
-  * ![img_1.png](app/img/supabase_api_token_temp.png)
+
+* ![img_1.png](app/img/supabase_api_token_temp.png)
 
 3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
-
 4. Set the `DATABASE_URL` environment variable using:
-    - The **DB password**
-    - The **hostname** shown under **Transaction Pooler**
+
+   - The **DB password**
+   - The **hostname** shown under **Transaction Pooler**
 
 ---
 
 ## 🖥️ Step 4: Run the Server
+
 ### Start the Server
+
 Start the FastAPI development server to run your server:
 
 ```bash
 uv run uvicorn app.main:app --reload
 ```
+
 > This will automatically create a `.venv` folder for your project if one doesn't already exist.
 
 ---
 
-### Access the API 
+### Access the API
+
 Once the server is running, open your browser and navigate to:
 
 ```
@@ -79,13 +86,15 @@ http://127.0.0.1:8000
 
 Or hold `Cmd` (Mac) or `Ctrl` (Windows/Linux) and click the link in your terminal.
 
-### 📚 Access the API Docs (Swagger UI)
+### Access the API Docs (Swagger UI)
 
 Once the server is running, FastAPI auto-generates interactive API docs at:
+
 - Swagger UI: [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs)
 - ReDoc: [`http://127.0.0.1:8000/redoc`](http://127.0.0.1:8000/redoc)
 
 #### To test an endpoint:
+
 1. Go to `/docs`
 2. Scroll to the endpoint you want to test
 3. Click on it to expand
@@ -96,10 +105,9 @@ Once the server is running, FastAPI auto-generates interactive API docs at:
 
 _This is super helpful during development to verify everything is working as expected._
 
-
 ---
 
-## 🔑 Step 5. 🔐 Authentication (JWT) Setup
+## Step 5. Authentication (JWT) Setup
 
 We're using Supabase's built-in authentication system to manage users (both customers and providers). Supabase issues a JWT (JSON Web Token) whenever a user signs in — we decode this token to identify the user in our FastAPI app.
 
@@ -108,8 +116,8 @@ We're using Supabase's built-in authentication system to manage users (both cust
 > To enable this, you must set the SUPABASE_JWT_SECRET in your .env file. This secret allows FastAPI to validate and decode incoming tokens securely.
 
 To get your secret:
-1. Go to your Supabase dashboard
 
+1. Go to your Supabase dashboard
 2. Navigate to Project Settings → API
 
 ![img.png](app/img/supabase_project_settings.png)
@@ -118,16 +126,15 @@ Use the service_role token that's provided to the right of this screenshot (just
 ![img_2.png](app/img/supabase_api_keys.png)
 
 3. Look for the value under JWT Secret
-
 4. Add it to your `.env` file as shown in the `.env_example`
 
->Note: This is the same secret Supabase uses to sign tokens, so your backend can safely verify them.
+> Note: This is the same secret Supabase uses to sign tokens, so your backend can safely verify them.
 
 ### ⚠️ Auth Routes Not Fully Functional Yet
 
 Endpoints like `POST /customers`, `POST /providers`, and any route under `/me` require a valid `Authorization` header with a Supabase-issued JWT.
 
-✅ These routes are scoped to the logged-in user  
+✅ These routes are scoped to the logged-in user
 ❌ Full login functionality (e.g. Google Auth) is **not yet implemented**
 
 Until auth is hooked up, these endpoints won’t work through normal API calls or Swagger UI.
@@ -178,25 +185,75 @@ We're using [Supabase](https://supabase.com/) (PostgreSQL) as our database.
 - Settings like the database URL are stored in a `.env` file (as seen in the previous step).
 
 ## 🧪 [Optional] Seed the Database
+
 To test your database connection or seed example data (e.g. into the `providers` table), you can run the following:
 
 ```
 uv run test_db.py
 ```
 
-### ✅ You're Ready!
+### You're Ready!
 
 You can now build and test your FastAPI backend locally. Happy coding!
+
+---
+
+## 📐 Code Style & Formatting
+
+This project uses:
+
+* `black`: an opinionated code formatter
+    * 
+* `ruff`: a fast Python linter & formatter
+    * [Download the extension here](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
+
+These tools ensure consistent style, enforce line length according to international standards and help catch issues early.
+
+### Format Your Code
+
+To format the full codebase:
+
+``` bash
+uv run format-all
+```
+
+To lint the full codebase:
+``` bash
+uv run lint-all
+```
+
+To format or lint specific files or folders:
+```
+uv run black app/models/customer.py
+uv run ruff check app/routers/ --fix
+```
+
+
+> Configuration is handled via `pyproject.toml`, `.editorconfig`, and `.vscode/settings.json`.
+
+## VSCode Extension Setup
+To enable real-time linting and formatting on save:
+1. [Install the Ruff extension](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
+2. Open the `backend/` folder in VSCode
+3. VSCode will use the included `.vscode/settings.json` which automatically:
+    * Formats on save (`black`)
+    * Sorts imports (`ruff`)
+    * Lints on save(`ruff`)
+
+> That's it! You're ready to code with consistent styling!
 
 ---
 
 ## 🧰 Dependency Management
 
 ### Add Dependencies
+
 ```
 uv add dependency name
 ```
+
 ### Remove Dependencies
+
 ```
 uv pip uninstall package-name
 uv remove package-name
@@ -204,6 +261,7 @@ uv sync
 ```
 
 ---
+
 ## 🧯 Troubleshooting
 
 ### Can't connect to Supabase?
