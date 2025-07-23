@@ -1,6 +1,6 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.models.customer import Customer, CustomerCreate, CustomerUpdate
 from app.db.session import get_session
