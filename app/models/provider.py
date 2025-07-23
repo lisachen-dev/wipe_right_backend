@@ -12,10 +12,11 @@ class ProviderBase(SQLModel):
 # Full model for DB
 class Provider(ProviderBase, table=True):
     __tablename__ = "providers"
-    __table_args__ = (UniqueConstraint("user_id"),)
+    __table_args__ = (UniqueConstraint("auth_user_id"),)
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    auth_user_id: UUID = Field(nullable=False, index=True)
+
+    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
 
     created_at: Optional[datetime] = Field(
         default=None,
