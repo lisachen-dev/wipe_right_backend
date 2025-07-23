@@ -17,19 +17,17 @@ async def read_current_user_profile(
         session: Session = Depends(get_session)
 ):
     # Try customer
-    customer = session.exec(
-        select(Customer).where(Customer.user_id == user_id)
-    ).first()
+    customer_statement = select(Customer).where(Customer.user_id == user_id)
+    db_customer: Customer | None = session.scalar(customer_statement)
 
-    if customer:
-        return {"role": "customer", "data": customer}
+    if db_customer:
+        return {"role": "customer", "data": db_customer}
 
     # Try provider
-    provider = session.exec(
-        select(Provider).where(Provider.user_id == user_id)
-    ).first()
+    provider_statement = select(Provider).where(Provider.user_id == user_id)
+    db_provider: Provider | None = session.scalar(provider_statement)
 
-    if provider:
-        return {"role": "provider", "data": provider}
+    if db_provider:
+        return {"role": "provider", "data": db_provider}
 
     raise HTTPException(status_code=404, detail="User not found in customer or provider tables")
