@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.db.session import get_session
 from app.models.provider import Provider, ProviderCreate, ProviderUpdate
@@ -56,7 +56,7 @@ async def update_own_provider(
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
 
-    return update_one(session, Provider, db_provider.id, update_data.dict(exclude_unset=True))
+    return update_one(session, Provider, db_provider.id, update_data.model_dump(exclude_unset=True))
 
 # AUTH: Delete current user's provider record
 @router.delete("/me", response_model=dict)
