@@ -47,9 +47,9 @@ async def get_current_user_id(
 ) -> UUID:
 
     # Extract the bearer token (already validated by HTTPBearer) and return validated Supabase user in json
-    user_data = await _supabase_get_user(auth_creds.credentials)
+    auth_user_data = await _supabase_get_user(auth_creds.credentials)
     try:
-        return UUID(user_data["id"])
+        return UUID(auth_user_data["id"])
     except Exception:
         raise HTTPException(
             status_code=400,

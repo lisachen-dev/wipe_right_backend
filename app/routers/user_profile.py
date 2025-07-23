@@ -17,7 +17,7 @@ async def read_current_user_profile(
         session: Session = Depends(get_session)
 ):
     # Try customer
-    customer_statement = select(Customer).where(Customer.user_id == user_id)
+    customer_statement = select(Customer).where(Customer.auth_user_id == user_id)
     db_customer: Customer | None = session.scalar(customer_statement)
 
     if db_customer:

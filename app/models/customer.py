@@ -14,7 +14,7 @@ class Customer(CustomerBase, table=True):
     __table_args__ = (UniqueConstraint("user_id"),)
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID = Field(nullable=False, index=True)
+    auth_user_id: UUID = Field(nullable=False, index=True)
 
     created_at: Optional[datetime] = Field(
         default=None,
