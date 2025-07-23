@@ -30,4 +30,4 @@ async def read_current_user_profile(
     if db_provider:
         return {"role": "provider", "data": db_provider}
 
-    raise HTTPException(status_code=404, detail="User not found in customer or provider tables")
+    raise HTTPException(status_code=404, detail="User not found in customerF or provider tables")
