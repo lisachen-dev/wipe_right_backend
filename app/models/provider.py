@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, List
 from uuid import UUID, uuid4
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from app.models.reviews import Review
 
 class ProviderBase(SQLModel):
-    email: str
+    # email: str
     phone_number: Optional[str] = None
 
 # Full model for DB
@@ -19,7 +19,7 @@ class Provider(ProviderBase, table=True):
     __tablename__ = "providers"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID
+    supabase_user_id: UUID
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -34,25 +34,23 @@ class Provider(ProviderBase, table=True):
             server_default=text("(now() AT TIME ZONE 'utc')"))
     )
 
-    services: list["Service"] = Relationship(back_populates = "provider")
-    reviews: list["Review"] = Relationship(back_populates = "provider")
+    services: List["Service"] = Relationship(back_populates = "provider")
+    reviews: List["Review"] = Relationship(back_populates = "provider")
 
 
 # Schema for create
 class ProviderCreate(SQLModel):
-    email: str
+    # email: str
     phone_number: Optional[str] = None
     user_id: UUID
 
 # Schema for update
 class ProviderUpdate(SQLModel):
-    email: Optional[str] = None
+    # email: Optional[str] = None
     phone_number: Optional[str] = None
 
 class ProviderResponseDetail(SQLModel):
     id: UUID
-    # name
-    email: str
     phone_number: Optional[str] = None
     services: list[ServiceRead]
     reviews: list[ReviewRead]

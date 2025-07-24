@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select, func
 
 from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail
-from app.models.reviews import Review
+from app.models.reviews import Review, ReviewRead
+from app.models.customer import Customer
 from app.db.session import get_session
 from app.utils.auth import get_current_user
 from app.utils.crud_helpers import get_all, get_one, create_one, update_one, delete_one
@@ -74,11 +75,27 @@ async def get_provider_details(
         raise HTTPException(status_code=404, detail="Provider not found")
 
     recent_reviews = session.exec(
-        select(Review)
+        select(Review.rating,
+               Review.description,
+               Review.created_at,
+               Customer.first_name,
+               Customer.last_name
+            )
+        .join(Customer, Review.customer_id == Customer.id)
         .where(Review.provider_id == provider_id)
         .order_by(Review.created_at.desc())
         .limit(3)
     ).all()
+
+    review_list = [
+        ReviewRead(
+            customer_name=f"{review.first_name} {review.last_name}",
+            rating=review.rating,
+            description=review.description,
+            created_at=review.created_at
+        ) 
+        for review in recent_reviews
+    ]
 
     review_data = session.exec(
         select(
@@ -89,10 +106,9 @@ async def get_provider_details(
 
     return ProviderResponseDetail(
         id=provider.id,
-        email=provider.email,
         phone_number=provider.phone_number,
         services=provider.services,
-        reviews=recent_reviews,
+        reviews=review_list,
         review_count=review_data.count or 0,
         average_rating=float(review_data.average) if review_data.average else None
     )

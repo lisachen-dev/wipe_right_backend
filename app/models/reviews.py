@@ -33,6 +33,7 @@ class Review(ReviewBase, table=True):
     )
 
     provider: "Provider" = Relationship(back_populates = "reviews")
+    customer: "Customer" = Relationship(back_populates="reviews")
 
 class ReviewCreate(ReviewBase):
     customer_id: UUID
@@ -45,3 +46,4 @@ class ReviewUpdate(SQLModel):
 
 class ReviewRead(ReviewBase):
     created_at: Optional[datetime]
+    customer_name: str

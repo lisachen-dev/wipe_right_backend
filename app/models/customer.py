@@ -1,18 +1,23 @@
-from typing import Optional
+from typing import Optional, TYPE_CHECKING, List
 from uuid import UUID, uuid4
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
 
+if TYPE_CHECKING:
+    from app.models.reviews import Review
+
 class CustomerBase(SQLModel):
-    email: str
+    # email: str
     phone_number: Optional[int] = None
+    first_name: str
+    last_name: str
 
 # Full model for DB
 class Customer(CustomerBase, table=True):
     __tablename__ = "customers"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID
+    supabase_user_id: UUID
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -27,14 +32,16 @@ class Customer(CustomerBase, table=True):
             server_default=text("(now() AT TIME ZONE 'utc')"))
     )
 
+    reviews: List["Review"] = Relationship(back_populates="customer")
+
 
 # Schema for create
 class CustomerCreate(SQLModel):
-    email: str
+    # email: str
     phone_number: Optional[int] = None
     user_id: UUID
 
 # Schema for update
 class CustomerUpdate(SQLModel):
-    email: Optional[str] = None
+    # email: Optional[str] = None
     phone_number: Optional[int] = None
