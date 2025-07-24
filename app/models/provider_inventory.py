@@ -11,7 +11,7 @@ class ProviderInventory (ProviderInventoryBase, table=True):
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
     supabase_user_id: UUID
-    provider: UUID
+    provider_id: UUID
     inventory_item_id: UUID
 
     created_at: Optional[datetime] = Field(
