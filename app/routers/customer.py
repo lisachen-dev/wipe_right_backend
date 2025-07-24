@@ -1,11 +1,12 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session
 
 from app.models.customer import Customer, CustomerCreate, CustomerUpdate
 from app.db.session import get_session
-from app.utils.auth import get_current_user
-from app.utils.crud_helpers import get_all, get_one, create_one, update_one, delete_one
+from app.utils.auth import get_current_user_id
+from app.utils.crud_helpers import create_one, update_one, delete_one
+from app.utils.user_helpers import get_user_scoped_record
 
 router = APIRouter(
     prefix="/customers",
@@ -13,73 +14,60 @@ router = APIRouter(
     responses={404: {"description": "Not found"}}
 )
 
-# PUBLIC: Anyone can create themselves as a customer
-# TODO Currently broken until Google Auth is implemented
 @router.post("/", response_model=Customer)
 async def create_customer(
-        customer: CustomerCreate,
-        user_id: UUID = Depends(get_current_user),
+        payload: CustomerCreate,
+        supabase_user_id: UUID = Depends(get_current_user_id),
         session: Session = Depends(get_session)
 ):
-    # Optional: prevent duplicate user_id
-    # noinspection PyTypeChecker
-    existing = session.exec(
-        select(Customer).where(Customer.user_id == user_id)
-    ).first()
 
-    if existing:
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
+    if db_customer:
         raise HTTPException(status_code=400, detail="Customer already exists")
 
-    # Inject user_id into the data manually
-    customer_data = customer.dict()
-    customer_data["user_id"] = user_id
+    # Inject supabase_user_id into the data manually
+    data = payload.model_dump()
+    data["supabase_user_id"] = supabase_user_id
 
-    return create_one(session, Customer, customer_data)
+    return create_one(session, Customer, data)
 
 # AUTH: Return current user's customer record
 @router.get("/me", response_model=Customer)
 async def read_own_customer(
-        user_id: UUID = Depends(get_current_user),
+        supabase_user_id: UUID = Depends(get_current_user_id),
         session: Session = Depends(get_session)
 ):
-    # noinspection PyTypeChecker
-    customer = session.exec(
-        select(Customer).where(Customer.user_id == user_id)
-    ).first()
 
-    if not customer:
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
+
+    if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
-    return customer
+    return db_customer
 
 # AUTH: Update current user's customer record
 @router.patch("/me", response_model=Customer)
 async def update_own_customer(
         update_data: CustomerUpdate,
-        user_id: UUID = Depends(get_current_user),
+        supabase_user_id: UUID = Depends(get_current_user_id),
         session: Session = Depends(get_session)
 ):
-    # noinspection PyTypeChecker
-    customer = session.exec(
-        select(Customer).where(Customer.user_id == user_id)
-    ).first()
 
-    if not customer:
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
+
+    if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    return update_one(session, Customer, customer.id, update_data.dict(exclude_unset=True))
+    return update_one(session, Customer, db_customer.id, update_data.model_dump(exclude_unset=True))
 
 # AUTH: Delete current user's customer record
 @router.delete("/me", response_model=dict)
 async def delete_own_customer(
-        user_id: UUID = Depends(get_current_user),
+        supabase_user_id: UUID = Depends(get_current_user_id),
         session: Session = Depends(get_session)
 ):
-    # noinspection PyTypeChecker
-    customer = session.exec(
-        select(Customer).where(Customer.user_id == user_id)
-    ).first()
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
 
-    if not customer:
+    if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    return delete_one(session, Customer, customer.id)
+    return delete_one(session, Customer, db_customer.id)
