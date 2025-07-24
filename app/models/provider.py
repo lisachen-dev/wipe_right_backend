@@ -53,10 +53,12 @@ class ProviderUpdate(SQLModel):
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
 
-class ProviderResponseDetail(SQLModel):
+class ProviderPublicRead(SQLModel):
     id: UUID
     phone_number: Optional[str] = None
     services: list[ServiceRead]
+
+class ProviderResponseDetail(ProviderPublicRead):```
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
