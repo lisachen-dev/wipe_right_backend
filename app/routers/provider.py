@@ -8,7 +8,7 @@ from app.models.provider import Provider, ProviderCreate, ProviderUpdate, Provid
 from app.models.reviews import Review, ReviewRead
 from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
-from app.utils.crud_helpers import create_one, update_one, delete_one, get_all
+from app.utils.crud_helpers import create_one, update_one, delete_one, get_all, get_one
 from app.utils.user_helpers import get_user_scoped_record
 
 router = APIRouter(
