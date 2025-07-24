@@ -1,18 +1,23 @@
 from typing import Optional
 from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
+from sqlmodel import SQLModel, Field, Column, DateTime, text, UniqueConstraint
 
 class ProviderBase(SQLModel):
-    email: str
-    phone_number: Optional[int] = None
+    first_name: str
+    last_name: str
+    company_name: Optional[str] = None
+    phone_number: Optional[str] = None
 
 # Full model for DB
 class Provider(ProviderBase, table=True):
     __tablename__ = "providers"
+    __table_args__ = (UniqueConstraint("supabase_user_id"),)
 
-    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    user_id: UUID
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+
+    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
+
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
@@ -28,13 +33,12 @@ class Provider(ProviderBase, table=True):
     )
 
 
-# Schema for create
-class ProviderCreate(SQLModel):
-    email: str
-    phone_number: Optional[int] = None
-    user_id: UUID
+# depends on payload schemas
+class ProviderCreate(ProviderBase):
+    pass
 
 # Schema for update
 class ProviderUpdate(SQLModel):
-    email: Optional[str] = None
-    phone_number: Optional[int] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone_number: Optional[str] = None
