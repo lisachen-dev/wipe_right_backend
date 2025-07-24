@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, func, select
 
 from app.db.session import get_session
-from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail
+from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail, ProviderCategoryResponse
 from app.models.reviews import Review, ReviewRead
 from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
@@ -77,7 +77,7 @@ async def get_provider_details(provider_id: UUID, supabase_user_id: UUID = Depen
     )
 
 
-@router.get("/all/{category_name}")
+@router.get("/all/{category_name}", response_model=list[ProviderCategoryResponse])
 async def read_providers_category_name(category_name: str, session: Session = Depends(get_session)):
 
     category_enum_val = validate_category(category_name)
@@ -85,10 +85,11 @@ async def read_providers_category_name(category_name: str, session: Session = De
     try:
         if not category_enum_val:
             raise HTTPException(status_code=400, detail="category name not found")
-        result = session.exec(select(Provider).join(Service).where(Service.category == category_enum_val)).all()
-        return result
-    except:
-        raise HTTPException(status_code=400, detail="error occured")
+        results = session.exec(select(Provider.id, Provider.company_name, Provider.first_name, Provider.last_name).join(Service).where(Service.category == category_enum_val).distinct()).all()
+
+        return [ProviderCategoryResponse(id=row[0], company_name=row[1], first_name=row[2], last_name=row[3]) for row in results]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error occurred: {str(e)}")
 
 
 # AUTH: Update current user's provider record

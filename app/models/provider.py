@@ -10,11 +10,13 @@ if TYPE_CHECKING:
     from app.models.service import Service
     from app.models.reviews import Review
 
+
 class ProviderBase(SQLModel):
     first_name: str
     last_name: str
     company_name: Optional[str] = None
     phone_number: Optional[str] = None
+
 
 # Full model for DB
 class Provider(ProviderBase, table=True):
@@ -25,33 +27,25 @@ class Provider(ProviderBase, table=True):
 
     supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
 
-    created_at: Optional[datetime] = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')"))
-    )
+    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")))
 
-    updated_at: Optional[datetime] = Field(
-        default=None,
-        sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')"))
-    )
+    updated_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")))
 
-    services: List["Service"] = Relationship(back_populates = "provider")
-    reviews: List["Review"] = Relationship(back_populates = "provider")
+    services: List["Service"] = Relationship(back_populates="provider")
+    reviews: List["Review"] = Relationship(back_populates="provider")
 
 
 # depends on payload schemas
 class ProviderCreate(ProviderBase):
     pass
 
+
 # Schema for update
 class ProviderUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
+
 
 class ProviderResponseDetail(SQLModel):
     id: UUID
@@ -60,3 +54,10 @@ class ProviderResponseDetail(SQLModel):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
+
+
+class ProviderCategoryResponse(SQLModel):
+    id: UUID
+    company_name: Optional[str] = None
+    first_name: str
+    last_name: str
