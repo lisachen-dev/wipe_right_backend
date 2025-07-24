@@ -37,7 +37,6 @@ async def create_provider(
 # Return all providers
 @router.get("/all", response_model=list[Provider])
 async def get_all_providers(
-    supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session)
 ):
     return get_all(session, Provider)
@@ -58,7 +57,6 @@ async def read_own_provider(
 @router.get("/{provider_id}", response_model=ProviderResponseDetail)
 async def get_provider_details(
     provider_id: UUID,
-    supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session)
 ):
 
