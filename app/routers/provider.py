@@ -37,6 +37,7 @@ async def create_provider(
 # Return all providers
 @router.get("/all", response_model=list[Provider])
 async def get_all_providers(
+    supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session)
 ):
     return get_all(session, Provider)
@@ -61,8 +62,11 @@ async def get_provider_details(
     session: Session = Depends(get_session)
 ):
 
-    db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
-    if not db_provider:
+    provider = session.exec(
+        select(Provider).where(Provider.id == provider_id)
+    ).first()
+
+    if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
 
     recent_reviews = session.exec(
@@ -96,9 +100,9 @@ async def get_provider_details(
     ).first()
 
     return ProviderResponseDetail(
-        id=db_provider.id,
-        phone_number=db_provider.phone_number,
-        services=db_provider.services,
+        id=provider.id,
+        phone_number=provider.phone_number,
+        services=provider.services,
         reviews=review_list,
         review_count=review_data.count or 0,
         average_rating=float(review_data.average) if review_data.average else None
