@@ -60,9 +60,7 @@ async def get_provider_details(
     session: Session = Depends(get_session)
 ):
 
-    provider = session.exec(
-        select(Provider).where(Provider.id == provider_id)
-    ).first()
+    provider = get_one(session, Provider, provider_id)
 
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
