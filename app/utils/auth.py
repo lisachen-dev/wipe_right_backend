@@ -1,35 +1,63 @@
-import os
-import jwt
+from http.client import HTTPException
 from uuid import UUID
-from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from typing import Annotated
-from dotenv import load_dotenv
 
-load_dotenv()
+import httpx
+from typing import Any, Dict, Optional
+from fastapi import Depends, HTTPException, status
+from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel
+from app import config
 
-# TODO placeholder, not used with Supabase login (until Google auth)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="not-used")
+"""
+params: auto_error
+note: auto_error=True (default): FastAPI will reject missing/malformed headers before this runs
+"""
+auth_bearer_token = HTTPBearer()
 
-JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
-JWT_ALGORITHM = "HS256"  # Supabase default
+class UnauthorizedMessage(BaseModel):
+    detail: str = "Bearer token missing or invalid"
 
-def decode_jwt(token: str) -> dict:
-    try:
-        decoded_payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        return decoded_payload
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+"""
+Extend database timeouts to execute longer transactions
+https://supabase.com/docs/guides/database/postgres/timeouts#session-level
+"""
+SUPABASE_HTTP_TIMEOUT=10
 
-async def get_current_user(
-        token: Annotated[str, Depends(oauth2_scheme)]
+async def _supabase_get_user(token: str) -> Dict[str,Any]:
+    # Validate Supabase access token by calling Supabase Auth.
+    url = f"{config.SUPABASE_URL}/auth/v1/user"
+    headers = {
+        "apikey": config.SUPABASE_PUBLISHABLE_KEY,
+        "Authorization": f"Bearer {token}"
+    }
+
+    async with httpx.AsyncClient(timeout=SUPABASE_HTTP_TIMEOUT) as client:
+        response = await client.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()
+
+    raise HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=UnauthorizedMessage().detail
+    )
+
+async def get_current_user_id(
+    auth_creds: Optional[HTTPAuthorizationCredentials] = Depends(auth_bearer_token)
 ) -> UUID:
-    payload = decode_jwt(token)
-    user_id = payload.get("sub")
 
-    if not user_id:
-        raise HTTPException(status_code=401, detail="Invalid token payload")
+    # Extract the bearer token (already validated by HTTPBearer) and return validated Supabase user in json
+    auth_user_data = await _supabase_get_user(auth_creds.credentials)
+    try:
+        return UUID(auth_user_data["id"])
+    except Exception:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or missing user ID from Supabase"
+        )
 
-    return UUID(user_id)
+async def get_supabase_user(
+        auth_creds: Optional[HTTPAuthorizationCredentials] = Depends(auth_bearer_token)
+):
+    return await _supabase_get_user(auth_creds.credentials
+)

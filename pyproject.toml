@@ -1,7 +1,7 @@
 [project]
 name = "team-corgi"
 version = "0.1.0"
-description = "Add your description here"
+description = "Corgi backends are cute"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -9,8 +9,6 @@ dependencies = [
     "anyio==4.9.0",
     "black>=25.1.0",
     "certifi==2025.7.9",
-    "cffi==1.17.1",
-    "cryptography==45.0.5",
     "click==8.2.1",
     "dnspython==2.7.0",
     "email-validator==2.2.0",
@@ -32,8 +30,6 @@ dependencies = [
     "pydantic-core==2.20.1",
     "pygments==2.19.2",
     "python-dotenv==1.0.1",
-    "pycparser==2.22",
-    "pyjwt==2.10.1",
     "python-multipart==0.0.20",
     "pyyaml==6.0.2",
     "rich==14.0.0",

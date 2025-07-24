@@ -47,12 +47,10 @@ This installs everything listed in `requirements.txt` and locks them using `uv.l
 We use a `.env` file to manage configuration, like database URLs.
 
 1. Go to **Supabase > Database > Connect**
-
-* ![img.png](app/img/supabase_database_connect.png)
+  * ![Supabase Database Connect](app/img/supabase_database_connect.png)
 
 2. In the modal that appears, look for the **Direct Connection** section at the top:
-
-* ![img_1.png](app/img/supabase_api_token_temp.png)
+  * ![Supabase API Token](app/img/supabase_api_token_temp.png)
 
 3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
 4. Set the `DATABASE_URL` environment variable using:
@@ -107,37 +105,33 @@ _This is super helpful during development to verify everything is working as exp
 
 ---
 
-## Step 5. Authentication (JWT) Setup
+## 🔑 Step 5. 🔐 Authentication (Supabase JWT)
 
-We're using Supabase's built-in authentication system to manage users (both customers and providers). Supabase issues a JWT (JSON Web Token) whenever a user signs in — we decode this token to identify the user in our FastAPI app.
+We are using **Supabase Auth** to handle user authentication for both customers and providers. When a user logs in via Google or any other provider, Supabase issues a JWT (JSON Web Token). This token is passed in the `Authorization` header and validated with credentials in the FastAPI backend.
+We extract the user ID from this token to access data accordingly.
 
-### ➕ Add the JWT Secret
+### ✅ Auth is Now Fully Functional
+* Google login is enabled in the frontend via Supabase
+* FastAPI validates Supabase issued JWTs for all authenticated users
+* Data is scoped for the logged in user through their unique `user_id` through Supabase' `auth` schema
 
-> To enable this, you must set the SUPABASE_JWT_SECRET in your .env file. This secret allows FastAPI to validate and decode incoming tokens securely.
+All user routes now work as expected. Some examples are listed below:
+* `POST /customers`
+* `GET /providers/me`
 
-To get your secret:
+### 🔐 Supabase JWT Setup in FastAPI
+To validate Supabase JWTs, the backend needs to know what key Supabase uses to sign tokens.
+> Note that Legacy JWT tokens are no longer in use
 
-1. Go to your Supabase dashboard
-2. Navigate to Project Settings → API
+We now use Supabase's public signing keys which are located in the Supabase project's **Project Settings** > API Keys
 
-![img.png](app/img/supabase_project_settings.png)
-
-Use the service_role token that's provided to the right of this screenshot (just out of picture)
-![img_2.png](app/img/supabase_api_keys.png)
-
-3. Look for the value under JWT Secret
-4. Add it to your `.env` file as shown in the `.env_example`
-
-> Note: This is the same secret Supabase uses to sign tokens, so your backend can safely verify them.
-
-### ⚠️ Auth Routes Not Fully Functional Yet
-
-Endpoints like `POST /customers`, `POST /providers`, and any route under `/me` require a valid `Authorization` header with a Supabase-issued JWT.
-
-✅ These routes are scoped to the logged-in user
-❌ Full login functionality (e.g. Google Auth) is **not yet implemented**
-
-Until auth is hooked up, these endpoints won’t work through normal API calls or Swagger UI.
+### 🔧 Required Env Vars for JWT (Specifically Backend)
+An example is located in `.env.example`
+```
+SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+SUPABASE_SECRET_KEY=sb_secret_...
+SUPABASE_URL=https://<PROJECT_ID>.supabase.co
+```
 
 ---
 
@@ -148,16 +142,16 @@ To explore the API interactively, visit [`http://127.0.0.1:8000/docs`](http://12
 We recommend starting with the `/inventory_items` routes — they **do not require authentication** and are safe to test directly via Swagger UI.
 
 On the Swagger UI page, expand the `inventory_items` section
-![img.png](app/img/swagger_inventory_items.png)
+![Swagger Inventory Items](app/img/swagger_inventory_items.png)
 
 Swagger makes you work, so click **"Try it out"**
-![img.png](app/img/swagger_try_it_out.png)
+![Swagger Try it out button](app/img/swagger_try_it_out.png)
 
 Select the gigantic **"Execute"** button
-![img.png](app/img/swagger_execute.png)
+![Swagger Execute](app/img/swagger_execute.png)
 
 You know it works if you are able to pull open the same information as what shows on the `inventory_items` table in Supabase!
-![img.png](app/img/swagger_inventory_items_200.png)
+![Swagger Inventory Items 200](app/img/swagger_inventory_items_200.png)
 
 > Happy Swaggering!
 
@@ -171,7 +165,7 @@ To simulate a logged-in user during local development, we've hardcoded a static 
 # app/utils/auth.py
 
 async def get_current_user() -> UUID:
-    return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
+  return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
 ```
 
 ---
@@ -195,6 +189,8 @@ uv run test_db.py
 ### You're Ready!
 
 You can now build and test your FastAPI backend locally. Happy coding!
+
+![Corgi Butt](app/img/b1.png)
 
 ---
 
