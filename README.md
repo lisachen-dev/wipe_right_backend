@@ -203,7 +203,7 @@ You can now build and test your FastAPI backend locally. Happy coding!
 This project uses:
 
 * `black`: an opinionated code formatter
-    * 
+    *
 * `ruff`: a fast Python linter & formatter
     * [Download the extension here](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
 
@@ -222,16 +222,20 @@ To lint the full codebase:
 uv run lint-all
 ```
 
+You can also run the following to let Ruff clean up the mess... it's got a nose for bad code.
+```bash
+uv run safe-fix
+```
+
 To format or lint specific files or folders:
 ```
 uv run black app/models/customer.py
 uv run ruff check app/routers/ --fix
 ```
 
-
 > Configuration is handled via `pyproject.toml`, `.editorconfig`, and `.vscode/settings.json`.
 
-## VSCode Extension Setup
+## VSCode Extension - A Ruff Setup
 To enable real-time linting and formatting on save:
 1. [Install the Ruff extension](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
 2. Open the `backend/` folder in VSCode

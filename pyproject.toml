@@ -67,7 +67,7 @@ fixable = ["ALL"]
 unfixable = []
 
 [tool.ruff.format]
-docstring-code-format = true 
+docstring-code-format = true
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
@@ -75,3 +75,4 @@ line-ending = "lf"
 [project.scripts]
 format-all = "black . && ruff check . --fix"
 lint-all = "ruff check ."
+safe-fix = "ruff check . --fix"
