@@ -8,7 +8,7 @@ from app.models.provider import Provider, ProviderCreate, ProviderUpdate, Provid
 from app.models.reviews import Review, ReviewRead
 from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
-from app.utils.crud_helpers import create_one, update_one, delete_one
+from app.utils.crud_helpers import create_one, update_one, delete_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
 
 router = APIRouter(
@@ -57,6 +57,7 @@ async def read_own_provider(
 @router.get("/{provider_id}", response_model=ProviderResponseDetail)
 async def get_provider_details(
     provider_id: UUID,
+    supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session)
 ):
 
@@ -98,59 +99,6 @@ async def get_provider_details(
         id=db_provider.id,
         phone_number=db_provider.phone_number,
         services=db_provider.services,
-        reviews=review_list,
-        review_count=review_data.count or 0,
-        average_rating=float(review_data.average) if review_data.average else None
-    )
-
-# Return provider details by ID
-@router.get("/{provider_id}", response_model=ProviderResponseDetail)
-async def get_provider_details(
-    provider_id: UUID,
-    session: Session = Depends(get_session)
-):
-    
-    provider = session.exec(
-        select(Provider).where(Provider.id == provider_id)
-    ).first()
-
-    if not provider:
-        raise HTTPException(status_code=404, detail="Provider not found")
-
-    recent_reviews = session.exec(
-        select(Review.rating,
-               Review.description,
-               Review.created_at,
-               Customer.first_name,
-               Customer.last_name
-            )
-        .join(Customer, Review.customer_id == Customer.id)
-        .where(Review.provider_id == provider_id)
-        .order_by(Review.created_at.desc())
-        .limit(3)
-    ).all()
-
-    review_list = [
-        ReviewRead(
-            customer_name=f"{review.first_name} {review.last_name}",
-            rating=review.rating,
-            description=review.description,
-            created_at=review.created_at
-        ) 
-        for review in recent_reviews
-    ]
-
-    review_data = session.exec(
-        select(
-            func.count(Review.id).label("count"),
-            func.avg(Review.rating).label("average")
-        ).where(Review.provider_id == provider_id)
-    ).first()
-
-    return ProviderResponseDetail(
-        id=provider.id,
-        phone_number=provider.phone_number,
-        services=provider.services,
         reviews=review_list,
         review_count=review_data.count or 0,
         average_rating=float(review_data.average) if review_data.average else None
