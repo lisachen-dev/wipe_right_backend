@@ -10,19 +10,14 @@ from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import create_one, update_one, delete_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
+from app.utils.validate_categories import validate_category
+from app.models.service import Service
 
-router = APIRouter(
-    prefix="/providers",
-    tags=["providers"],
-    responses={404: {"description": "Not found"}}
-)
+router = APIRouter(prefix="/providers", tags=["providers"], responses={404: {"description": "Not found"}})
+
 
 @router.post("/", response_model=Provider)
-async def create_provider(
-        payload: ProviderCreate,
-        supabase_user_id: UUID = Depends(get_current_user_id),
-        session: Session = Depends(get_session)
-):
+async def create_provider(payload: ProviderCreate, supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
 
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if db_provider:
@@ -34,70 +29,43 @@ async def create_provider(
 
     return create_one(session, Provider, provider_data)
 
+
 # Return all providers
 @router.get("/all", response_model=list[Provider])
-async def get_all_providers(
-    supabase_user_id: UUID = Depends(get_current_user_id),
-    session: Session = Depends(get_session)
-):
+async def get_all_providers(supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
     return get_all(session, Provider)
+
 
 # AUTH: Return current user's provider record
 @router.get("/me", response_model=Provider)
-async def read_own_provider(
-        supabase_user_id: UUID = Depends(get_current_user_id),
-        session: Session = Depends(get_session)
-):
+async def read_own_provider(supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
 
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     return db_provider
 
+
 # Return provider details by ID
 @router.get("/{provider_id}", response_model=ProviderResponseDetail)
-async def get_provider_details(
-    provider_id: UUID,
-    supabase_user_id: UUID = Depends(get_current_user_id),
-    session: Session = Depends(get_session)
-):
+async def get_provider_details(provider_id: UUID, supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
 
-    provider = session.exec(
-        select(Provider).where(Provider.id == provider_id)
-    ).first()
+    provider = session.exec(select(Provider).where(Provider.id == provider_id)).first()
 
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
 
     recent_reviews = session.exec(
-        select(Review.rating,
-               Review.description,
-               Review.created_at,
-               Customer.first_name,
-               Customer.last_name
-            )
+        select(Review.rating, Review.description, Review.created_at, Customer.first_name, Customer.last_name)
         .join(Customer, Review.customer_id == Customer.id)
         .where(Review.provider_id == provider_id)
         .order_by(Review.created_at.desc())
         .limit(3)
     ).all()
 
-    review_list = [
-        ReviewRead(
-            customer_name=f"{review.first_name} {review.last_name}",
-            rating=review.rating,
-            description=review.description,
-            created_at=review.created_at
-        ) 
-        for review in recent_reviews
-    ]
+    review_list = [ReviewRead(customer_name=f"{review.first_name} {review.last_name}", rating=review.rating, description=review.description, created_at=review.created_at) for review in recent_reviews]
 
-    review_data = session.exec(
-        select(
-            func.count(Review.id).label("count"),
-            func.avg(Review.rating).label("average")
-        ).where(Review.provider_id == provider_id)
-    ).first()
+    review_data = session.exec(select(func.count(Review.id).label("count"), func.avg(Review.rating).label("average")).where(Review.provider_id == provider_id)).first()
 
     return ProviderResponseDetail(
         id=provider.id,
@@ -105,16 +73,27 @@ async def get_provider_details(
         services=provider.services,
         reviews=review_list,
         review_count=review_data.count or 0,
-        average_rating=float(review_data.average) if review_data.average else None
+        average_rating=float(review_data.average) if review_data.average else None,
     )
+
+
+@router.get("/all/{category_name}")
+async def read_providers_category_name(category_name: str, session: Session = Depends(get_session)):
+
+    category_enum_val = validate_category(category_name)
+
+    try:
+        if not category_enum_val:
+            raise HTTPException(status_code=400, detail="category name not found")
+        result = session.exec(select(Provider).join(Service).where(Service.category == category_enum_val)).all()
+        return result
+    except:
+        raise HTTPException(status_code=400, detail="error occured")
+
 
 # AUTH: Update current user's provider record
 @router.patch("/me", response_model=Provider)
-async def update_own_provider(
-        update_data: ProviderUpdate,
-        supabase_user_id: UUID = Depends(get_current_user_id),
-        session: Session = Depends(get_session)
-):
+async def update_own_provider(update_data: ProviderUpdate, supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
 
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if not db_provider:
@@ -122,13 +101,11 @@ async def update_own_provider(
 
     return update_one(session, Provider, db_provider.id, update_data.model_dump(exclude_unset=True))
 
+
 # AUTH: Delete current user's provider record
 @router.delete("/me", response_model=dict)
-async def delete_own_provider(
-        supabase_user_id: UUID = Depends(get_current_user_id),
-        session: Session = Depends(get_session)
-):
-    db_provider=get_user_scoped_record(session, Provider, supabase_user_id)
+async def delete_own_provider(supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+    db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
 
