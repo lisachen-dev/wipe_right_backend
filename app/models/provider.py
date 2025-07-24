@@ -58,7 +58,7 @@ class ProviderPublicRead(SQLModel):
     phone_number: Optional[str] = None
     services: list[ServiceRead]
 
-class ProviderResponseDetail(ProviderPublicRead):```
+class ProviderResponseDetail(ProviderPublicRead):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
