@@ -67,8 +67,3 @@ docstring-code-format = true
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
-
-[project.scripts]
-format-all = "black . && ruff check . --fix"
-lint-all = "ruff check ."
-safe-fix = "ruff check . --fix"
