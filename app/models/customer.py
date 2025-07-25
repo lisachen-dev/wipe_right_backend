@@ -63,7 +63,7 @@ class CustomerUpdate(SQLModel):
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
 
-# Used to testing customer relationships
+# Used to test customer relationships
 class CustomerRead(CustomerBase):
     addresses: list[AddressBase]
     bookings: list[BookingBase]

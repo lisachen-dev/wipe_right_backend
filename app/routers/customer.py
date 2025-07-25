@@ -46,7 +46,7 @@ async def read_own_customer(
         raise HTTPException(status_code=404, detail="Customer not found")
     return db_customer
 
-# Used to testing customer relationships
+# Used to test customer relationships
 @router.get("/all", response_model=list[CustomerRead])
 async def read_all_customers(
     session: Session = Depends(get_session)
