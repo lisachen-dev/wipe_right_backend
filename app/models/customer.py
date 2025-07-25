@@ -11,6 +11,9 @@ from sqlmodel import (
     SQLModel,
 )
 
+from app.models.address import AddressBase
+from app.models.booking import BookingBase
+
 if TYPE_CHECKING:
     from app.models.reviews import Review
     from app.models.address import Address
@@ -54,9 +57,13 @@ class Customer(CustomerBase, table=True):
 class CustomerCreate(CustomerBase):
     pass
 
-
 # Schema for update
 class CustomerUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
+
+# Used to testing customer relationships
+class CustomerRead(CustomerBase):
+    addresses: list[AddressBase]
+    bookings: list[BookingBase]

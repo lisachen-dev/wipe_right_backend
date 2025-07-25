@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from app.db.session import get_session
-from app.models.customer import Customer, CustomerCreate, CustomerUpdate
+from app.models.customer import Customer, CustomerCreate, CustomerUpdate, CustomerRead
 from app.utils.auth import get_current_user_id
-from app.utils.crud_helpers import create_one, delete_one, update_one
+from app.utils.crud_helpers import create_one, delete_one, update_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
 
 router = APIRouter(
@@ -14,7 +14,6 @@ router = APIRouter(
     tags=["customers"],
     responses={404: {"description": "Not found"}},
 )
-
 
 @router.post("/", response_model=Customer)
 async def create_customer(
@@ -47,6 +46,12 @@ async def read_own_customer(
         raise HTTPException(status_code=404, detail="Customer not found")
     return db_customer
 
+# Used to testing customer relationships
+@router.get("/all", response_model=list[CustomerRead])
+async def read_all_customers(
+    session: Session = Depends(get_session)
+):
+    return get_all(session, Customer)
 
 # AUTH: Update current user's customer record
 @router.patch("/me", response_model=Customer)
