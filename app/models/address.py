@@ -1,9 +1,11 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text
+from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
 
+if TYPE_CHECKING:
+    from app.models.customer import Customer
 
 class AddressBase(SQLModel):
     street_address_1: str
@@ -11,7 +13,6 @@ class AddressBase(SQLModel):
     city: str
     state: str
     zip: str
-
 
 class Address(AddressBase, table=True):
     __tablename__ = "addresses"
@@ -32,6 +33,7 @@ class Address(AddressBase, table=True):
         ),
     )
 
+    customer: "Customer" = Relationship(back_populates="addresses")
 
 class AddressCreate(AddressBase):
     customer_id: UUID

@@ -109,7 +109,7 @@ async def get_provider_details(
         services=provider.services,
         reviews=review_list,
         review_count=review_data.count or 0,
-        average_rating=float(review_data.average) if review_data.average else None,
+        average_rating=float(review_data.average) if review_data.average else None
     )
 
 

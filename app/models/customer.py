@@ -13,13 +13,12 @@ from sqlmodel import (
 
 if TYPE_CHECKING:
     from app.models.reviews import Review
-
+    from app.models.address import Address
 
 class CustomerBase(SQLModel):
     first_name: str
     last_name: str
     phone_number: Optional[str] = None
-
 
 # Full model for DB
 class Customer(CustomerBase, table=True):
@@ -47,6 +46,7 @@ class Customer(CustomerBase, table=True):
     )
 
     reviews: List["Review"] = Relationship(back_populates="customer")
+    addresses: List["Address"] = Relationship(back_populates="customer")
 
 
 # depends on payload schemas
