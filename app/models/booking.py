@@ -1,9 +1,13 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text
+from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
 
+if TYPE_CHECKING:
+    from app.models.customer import Customer
+    from app.models.provider import Provider
+    from app.models.service import Service
 
 class BookingBase(SQLModel):
     special_instructions: Optional[str] = None
@@ -33,6 +37,9 @@ class Booking(BookingBase, table=True):
         ),
     )
 
+    customer: "Customer" = Relationship(back_populates="bookings")
+    provider: "Provider" = Relationship(back_populates="bookings")
+    service: "Service" = Relationship(back_populates="bookings")
 
 class BookingCreate(BookingBase):
     customer_id: UUID

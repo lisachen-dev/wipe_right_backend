@@ -17,7 +17,7 @@ from app.models.reviews import ReviewRead
 if TYPE_CHECKING:
     from app.models.service import Service
     from app.models.reviews import Review
-
+    from app.models.booking import Booking
 
 class ProviderBase(SQLModel):
     first_name: str
@@ -53,7 +53,7 @@ class Provider(ProviderBase, table=True):
 
     services: List["Service"] = Relationship(back_populates="provider")
     reviews: List["Review"] = Relationship(back_populates="provider")
-
+    bookings: List["Booking"] = Relationship(back_populates="provider")
 
 # depends on payload schemas
 class ProviderCreate(ProviderBase):
