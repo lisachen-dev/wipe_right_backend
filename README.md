@@ -2,6 +2,8 @@
 
 This is the backend API for the Wipe Right project, built with **FastAPI**, **SQLModel**, and **Supabase**. It supports customer and provider accounts, service listings, bookings, and more.
 
+![Corgi Butt](app/img/b1.png)
+
 ---
 
 ## 📚 Table of Contents
@@ -141,8 +143,7 @@ uv run uvicorn app.main:app --reload
 
 You can now build and test your FastAPI backend locally. Happy coding!
 
-![Corgi Butt](app/img/b1.png)
-
+![Corgi Butt2](app/img/b2.png)
 ---
 
 
