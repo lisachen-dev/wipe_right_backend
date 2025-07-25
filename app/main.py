@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
@@ -15,7 +15,7 @@ from app.routers import (
     service_inventory,
     status_update,
     transaction,
-    user_profile
+    user_profile,
 )
 
 app = FastAPI()
@@ -25,7 +25,7 @@ router = APIRouter()
 # noinspection PyTypeChecker
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Replace with specific domains
+    allow_origins=["*"],  # Replace with specific domains
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,6 +45,7 @@ app.include_router(service_inventory.router)
 app.include_router(status_update.router)
 app.include_router(transaction.router)
 app.include_router(user_profile.router)
+
 
 # Root Route redirects to Swagger docs
 @app.get("/", include_in_schema=False)

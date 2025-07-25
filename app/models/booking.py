@@ -1,12 +1,15 @@
+from datetime import datetime
 from typing import Optional
 from uuid import UUID, uuid4
-from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
+
+from sqlmodel import Column, DateTime, Field, SQLModel, text
+
 
 class BookingBase(SQLModel):
     special_instructions: Optional[str] = None
     service_notes: Optional[str] = None
     start_time: datetime
+
 
 class Booking(BookingBase, table=True):
     __tablename__ = "bookings"
@@ -19,17 +22,23 @@ class Booking(BookingBase, table=True):
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
+
 
 class BookingCreate(BookingBase):
     customer_id: UUID
     provider_id: UUID
     service_id: UUID
+
 
 class BookingUpdate(SQLModel):
     special_instructions: Optional[str] = None

@@ -34,14 +34,19 @@ class Service(ServiceBase, table=True):
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
-    provider: "Provider" = Relationship(back_populates = "services")
+    provider: "Provider" = Relationship(back_populates="services")
+
 
 class ServiceCreate(ServiceBase):
     provider_id: UUID
@@ -52,6 +57,7 @@ class ServiceUpdate(SQLModel):
     service_description: Optional[str] = None
     pricing: Optional[float] = None
     duration: Optional[int] = None
+
 
 class ServiceRead(ServiceBase):
     id: UUID

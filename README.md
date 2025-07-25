@@ -1,219 +1,284 @@
-# 🚀 FastAPI Project Setup Guide
+# 🧼 Welcome to Wipe Ripe – Backend (FastAPI)
 
-This guide will help you get the FastAPI server up and running using [`uv`](https://github.com/astral-sh/uv), a modern Python package manager and runtime.
-
----
-
-## 📦 Step 1: Install `uv`
-
-If you don't already have `uv` installed, you can install it with one of the following methods:
-
-### MacOS / Linux
-
-```bash
-curl -Ls https://astral.sh/uv/install.sh | bash
-```
-
-### Windows (PowerShell)
-
-```powershell
-irm https://astral.sh/uv/install.ps1 | iex
-```
-
-Alternatively, check out the [official uv installation docs](https://github.com/astral-sh/uv#installation) for more options.
-
----
-
-## 📥 Step 2: Install Dependencies
-
-Install the project dependencies using:
-
-```bash
-uv add -r requirements.txt
-```
-
-Run this command to sync and update/remove dependencies as indicated in both the `requirements.txt` and `pyproject.toml`
-
-```bash
-uv sync
-```
-
-This installs everything listed in `requirements.txt` and locks them using `uv.lock` for reproducibility.
-
----
-
-## Step 3: 🔐 Configure Environment Variables
-
-We use a `.env` file to manage configuration, like database URLs.
-1. Go to **Supabase > Database > Connect**
-  * ![Supabase Database Connect](app/img/supabase_database_connect.png)
-
-2. In the modal that appears, look for the **Direct Connection** section at the top:
-  * ![Supabase API Token](app/img/supabase_api_token_temp.png)
-
-3. Use the `.env_example` file as a template to create your own `.env`. _Also mentioned in next step._
-
-4. Set the `DATABASE_URL` environment variable using:
-    - The **DB password**
-    - The **hostname** shown under **Transaction Pooler**
-
----
-
-## 🖥️ Step 4: Run the Server
-### Start the Server
-Start the FastAPI development server to run your server:
-
-```bash
-uv run uvicorn app.main:app --reload
-```
-> This will automatically create a `.venv` folder for your project if one doesn't already exist.
-
----
-
-### Access the API 
-Once the server is running, open your browser and navigate to:
-
-```
-http://127.0.0.1:8000
-```
-
-Or hold `Cmd` (Mac) or `Ctrl` (Windows/Linux) and click the link in your terminal.
-
-### 📚 Access the API Docs (Swagger UI)
-
-Once the server is running, FastAPI auto-generates interactive API docs at:
-- Swagger UI: [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs)
-- ReDoc: [`http://127.0.0.1:8000/redoc`](http://127.0.0.1:8000/redoc)
-
-#### To test an endpoint:
-1. Go to `/docs`
-2. Scroll to the endpoint you want to test
-3. Click on it to expand
-4. Click the "Try it out" button on the right
-5. Enter any required parameters
-6. Click "Execute"
-7. Scroll down to view the response from the server
-
-_This is super helpful during development to verify everything is working as expected._
-
----
-
-## 🔑 Step 5. 🔐 Authentication (Supabase JWT)
-
-We are using **Supabase Auth** to handle user authentication for both customers and providers. When a user logs in via Google or any other provider, Supabase issues a JWT (JSON Web Token). This token is passed in the `Authorization` header and validated with credentials in the FastAPI backend.
-We extract the user ID from this token to access data accordingly.
-
-### ✅ Auth is Now Fully Functional
-* Google login is enabled in the frontend via Supabase
-* FastAPI validates Supabase issued JWTs for all authenticated users
-* Data is scoped for the logged in user through their unique `user_id` through Supabase' `auth` schema
-
-All user routes now work as expected. Some examples are listed below:
-* `POST /customers`
-* `GET /providers/me`
-
-### 🔐 Supabase JWT Setup in FastAPI
-To validate Supabase JWTs, the backend needs to know what key Supabase uses to sign tokens.
-> Note that Legacy JWT tokens are no longer in use
-
-We now use Supabase's public signing keys which are located in the Supabase project's **Project Settings** > API Keys
-
-### 🔧 Required Env Vars for JWT (Specifically Backend)
-An example is located in `.env.example`
-```
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-SUPABASE_SECRET_KEY=sb_secret_...
-SUPABASE_URL=https://<PROJECT_ID>.supabase.co
-```
-
----
-
-### 🧪 For Testing: Use [`/docs`](http://127.0.0.1:8000/docs)
-
-To explore the API interactively, visit [`http://127.0.0.1:8000/docs`](http://127.0.0.1:8000/docs) once your server is running.
-
-We recommend starting with the `/inventory_items` routes — they **do not require authentication** and are safe to test directly via Swagger UI.
-
-On the Swagger UI page, expand the `inventory_items` section
-![Swagger Inventory Items](app/img/swagger_inventory_items.png)
-
-Swagger makes you work, so click **"Try it out"**
-![Swagger Try it out button](app/img/swagger_try_it_out.png)
-
-Select the gigantic **"Execute"** button
-![Swagger Execute](app/img/swagger_execute.png)
-
-You know it works if you are able to pull open the same information as what shows on the `inventory_items` table in Supabase!
-![Swagger Inventory Items 200](app/img/swagger_inventory_items_200.png)
-
-> Happy Swaggering!
-
----
-
-### 🔧 Dev-Only Auth Workaround
-
-To simulate a logged-in user during local development, we've hardcoded a static UUID as a placeholder:
-
-```
-# app/utils/auth.py
-
-async def get_current_user() -> UUID:
-    return UUID("3fa85f64-5717-4562-b3fc-2c963f66afa6")
-```
-
----
-
-## 🧱 Step 6. Database & Model Setup
-
-We're using [Supabase](https://supabase.com/) (PostgreSQL) as our database.
-
-- We define our database tables using `SQLModel`, a library that makes it easy to work with both Python data and SQL databases.
-- Supabase hosts our Postgres database and helps manage performance behind the scenes.
-- Settings like the database URL are stored in a `.env` file (as seen in the previous step).
-
-## 🧪 [Optional] Seed the Database
-To test your database connection or seed example data (e.g. into the `providers` table), you can run the following:
-
-```
-uv run test_db.py
-```
-
-### ✅ You're Ready!
-
-You can now build and test your FastAPI backend locally. Happy coding!
+This is the backend API for the Wipe Right project, built with **FastAPI**, **SQLModel**, and **Supabase**. It supports customer and provider accounts, service listings, bookings, and more.
 
 ![Corgi Butt](app/img/b1.png)
 
 ---
 
-## 🧰 Dependency Management
+## 📚 Table of Contents
 
-### Add Dependencies
-```
-uv add dependency name
-```
-### Remove Dependencies
-```
-uv pip uninstall package-name
-uv remove package-name
-uv sync
-```
+- [⚡ Quickstart](#-quickstart)
+- [🆕 First-Time Setup](#-first-time-setup)
+  - [📦 Install Dependencies](#-install-dependencies)
+  - [🔐 Environment Variables](#-environment-variables)
+- [🧰 Prerequisites & Tooling](#-prerequisites--tooling)
+- [▶️ Run the Server](#️-run-the-server)
+- [📚 API Docs](#-api-docs)
+- [🔑 Authentication](#-authentication)
+- [🧱 Code Style & Formatting](#-code-style--formatting)
+- [🧯 Troubleshooting](#-troubleshooting)
 
 ---
+
+## ⚡ Quickstart
+Already cloned the repo and set up your `.env`?
+
+Just run:
+
+```bash
+uv sync
+make run
+```
+Or if `make` is not installed:
+```uv run uvicorn app.main:app --reload```
+
+> This will automatically create a `.venv` if one doesn't already exist.
+
+---
+
+## 🆕 First-Time Setup
+
+If this is your first time working on the project, follow these steps to get your backend environment up and running.
+
+### 📦 Install Dependencies
+
+Install everything you need to run the project:
+
+```bash
+uv sync                  # Install dependencies from requirements.txt
+cp .env_example .env     # Create your .env file (configure it in the next step)
+make run                 # Start the FastAPI dev server
+```
+Or if `make` is not installed:
+```uv run uvicorn app.main:app --reload```
+
+> This will automatically create a `.venv` if one doesn't already exist.
+
+
+### 🔐 Configure Environment Variables
+
+We use a `.env` file to manage secrets and environment-specific settings.
+
+1. Go to **Supabase → Database → Connect**
+   - ![Supabase Database Connect](app/img/supabase_database_connect.png)
+
+2. In the modal that appears, look for the **Direct Connection** section.
+   - ![Supabase API Token](app/img/supabase_api_token_temp.png)
+
+3. Copy the example `.env` file to get started:
+
+- **Mac/Linux/WSL/Git Bash:**
+  ```bash
+  cp .env_example .env
+  ```
+- **Windows (CMD):**
+  ```commandline
+  copy .env_example .env
+  ```
+
+4. Open `.env` in your editor and replace the placeholder values with your own:
+* `DATABASE_URL`: Use the credentials from the Transaction Pooler section
+* `SUPABASE_URL`: Your Supabase project URL
+* `SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY`: Found in Supabase → Project Settings → API
+
+> The `.env` file is ignored by Git — each team member must configure it locally.
+
+---
+
+## 🧰 Prerequisites & Tooling
+
+This project assumes you're using **VS Code** as your editor.
+
+### ✅ Required Tools
+
+| Tool         | Purpose                         | Install Command / Link |
+|--------------|----------------------------------|-------------------------|
+| [`uv`](https://github.com/astral-sh/uv)         | Python runtime + package manager | **Mac/Linux:**<br>`curl -Ls https://astral.sh/uv/install.sh \| bash`<br>**Windows (PowerShell):**<br>`irm https://astral.sh/uv/install.ps1 \| iex` |
+| `make`       | Task runner for common scripts   | **Mac/Linux/WSL/Git Bash:** Already installed<br>**Windows (CMD/Powershell):*** `choco install make`<br>✅ To confirm `make` is installed, run: <br>`make --version`|
+| `.env` file  | Local env variables              | Copy `.env_example` to `.env` and configure manually |
+
+> * _Note: you will need to run this as an Administrator (i.e. right-click on the CommandPrompt program before opening it and Run as Admin_)
+---
+
+### 💻 VS Code Extensions (Recommended for full workflow)
+
+- [Makefile Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.makefile-tools)
+- [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+- [Ruff (Linter)](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
+
+> 💡 **To experience the full developer workflow**, install all of the extensions above and open the `backend/` folder in VS Code.
+
+VS Code will auto-detect `.vscode/settings.json`, which enables:
+
+- ✅ Format on save using `black`
+- ✅ Lint on save using `ruff`
+- ✅ Sort imports using `ruff`
+
+---
+
+## ▶️ Run the Server
+
+Once your dependencies and environment variables are set, you can start the FastAPI development server.
+
+### ✅ Using Make
+
+```bash
+make run
+```
+
+**🛠️ Without Make**
+```
+uv run uvicorn app.main:app --reload
+```
+
+
+> **This will start the server on http://127.0.0.1:8000**
+> 
+> You’ll see logs in your terminal showing the server is running. To stop the server, press Ctrl + C.
+
+---
+
+### You're Ready!
+
+You can now build and test your FastAPI backend locally. Happy coding!
+
+![Corgi Butt2](app/img/b2.png)
+---
+
+
+## 📚 API Docs
+
+FastAPI automatically provides interactive API documentation:
+
+- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **ReDoc**: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+
+### 🔍 How to Test
+
+1. Visit `/docs` in your browser
+2. Find the route you want to test
+3. Click "Try it out"
+4. Fill in any required parameters
+5. Click "Execute"
+6. View the live response from the backend
+
+This is useful for testing endpoints during development, especially for unauthenticated routes like:
+
+```http
+GET /inventory_items
+```
+
+> If your route requires authentication, you'll need to include a Supabase JWT token in the `Authorization` header.
+
+---
+
+## 🔑 Authentication
+
+We use **Supabase Auth** to manage user authentication for both customers and providers.
+
+When a user logs in (e.g. via Google), Supabase issues a **JWT (JSON Web Token)**. This token is passed in the `Authorization` header on each request:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**The FastAPI backend:**
+- Validates this token using Supabase’s public signing key
+- Extracts the authenticated user’s ID
+- Scopes data access based on that user ID
+
+### ✅ Auth Status
+
+- Google login is enabled in the frontend via Supabase
+- Backend authentication is fully functional
+- All user-scoped routes (e.g. `GET /providers/me`, `POST /customers`) require a valid Supabase token
+
+### 🔐 `.env` values needed for auth:
+
+```env
+SUPABASE_URL=https://<your-project>.supabase.co
+SUPABASE_PUBLISHABLE_KEY=sb-publishable-key-goes-here
+SUPABASE_SECRET_KEY=sb-secret-key-goes-here
+```
+You can find these values in your Supabase project under `Settings` → `API`.
+
+---
+
+## 🧱 Code Style & Formatting
+
+This project uses:
+
+- [`black`](https://black.readthedocs.io/) – for automatic code formatting
+- [`ruff`](https://docs.astral.sh/ruff/) – for linting and import sorting
+
+### 🔧 Common Commands
+
+| Task            | Makefile Command      | Direct Command |
+|-----------------|------------------------|----------------|
+| Format code     | `make format-all`      | `uv run black . && uv run ruff check . --fix` |
+| Lint code       | `make lint-all`        | `uv run ruff check .` |
+| Auto-fix issues | `make safe-fix`        | `uv run ruff check . --fix` |
+
+### 🎯 Target a specific file or folder:
+
+```bash
+uv run black app/models/customer.py
+uv run ruff check app/routers/ --fix
+```
+
+> Linting and formatting settings are defined in pyproject.toml. VS Code uses .vscode/settings.json to enforce format/lint on save.
+
+---
+
+## 🧰 Dependency Management
+
+We use [`uv`](https://github.com/astral-sh/uv) to manage dependencies and virtual environments.
+
+### Add a dependency
+
+```bash
+uv add package-name
+```
+This will install the package and update both `requirements.txt` and `uv.lock`.
+
+### Remove a dependency
+
+```bash
+uv pip uninstall package-name   # removes the installed package from your environment
+uv remove package-name          # removes it from the lockfile and requirements
+uv sync                         # final cleanup to sync everything
+```
+> Always run `uv sync` after modifying dependencies to ensure your environment stays in sync with the lockfile.
+---
+
 ## 🧯 Troubleshooting
 
-### Can't connect to Supabase?
+### 🔌 Can't connect to Supabase?
 
-If you're seeing errors like:
+If you see an error like:
 
 ```
 psycopg2.OperationalError: could not translate host name ...
 ```
 
-Make sure your internet connection isn't blocking access to Supabase's cloud database.
+**Try the following:**
 
-We've seen cases where **some Wi-Fi networks block or throttle access**, especially on public or secured networks. If you're stuck:
+- ✅ Double-check your `.env` file — especially `DATABASE_URL`
 
-- Try switching to a mobile hotspot
-- Check your firewall or DNS settings
-- Make sure `.env` is loading the correct `DATABASE_URL` (i.e. print the string)
+---
+
+### 🛠 Other Tips
+
+- ❌ `make: command not found`  
+  → Run `make --version` to confirm it's installed. On Windows, use **Git Bash**, **WSL**, or install `make` with Chocolatey (`choco install make` as Administrator).
+
+- ❌ `ModuleNotFoundError`  
+  → Make sure you've run `uv sync` and you're in the right virtual environment (`.venv`).
+
+- ❌ Swagger UI not loading?  
+  → Ensure your server is running at [http://127.0.0.1:8000](http://127.0.0.1:8000) and reload the page.
+
+> Still stuck? Drop a screenshot and we’ll debug together 💬
+
+---
