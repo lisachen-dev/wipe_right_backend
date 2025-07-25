@@ -10,9 +10,9 @@ class ProviderInventory (ProviderInventoryBase, table=True):
     __tablename__ = "provider_inventory"
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
-    supabase_user_id: UUID
-    provider: UUID
-    inventory_item_id: UUID
+    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
+    provider_id: UUID = Field(nullable=False, foreign_key="providers.id", index=True)
+    inventory_item_id: UUID = Field(nullable=False, foreign_key=" inventory_item.id", index=True)
 
     created_at: Optional[datetime] = Field(
         default=None,
