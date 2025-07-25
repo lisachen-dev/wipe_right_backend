@@ -1,6 +1,7 @@
 # app/routers/provider_inventory.py
 
 from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
@@ -8,18 +9,15 @@ from app.db.session import get_session
 from app.models.provider_inventory import (
     ProviderInventory,
     ProviderInventoryCreate,
-    ProviderInventoryUpdate
+    ProviderInventoryUpdate,
 )
 
-router = APIRouter(
-    prefix="/provider_inventory",
-    tags=["provider_inventory"]
-)
+router = APIRouter(prefix="/provider_inventory", tags=["provider_inventory"])
+
 
 @router.post("/", response_model=ProviderInventory)
 def create_provider_inventory(
-        inventory_data: ProviderInventoryCreate,
-        session: Session = Depends(get_session)
+    inventory_data: ProviderInventoryCreate, session: Session = Depends(get_session)
 ):
     provider_inventory = ProviderInventory(**inventory_data.dict())
     session.add(provider_inventory)
@@ -34,7 +32,9 @@ def read_all_provider_inventory(session: Session = Depends(get_session)):
 
 
 @router.get("/{inventory_id}", response_model=ProviderInventory)
-def read_provider_inventory(inventory_id: UUID, session: Session = Depends(get_session)):
+def read_provider_inventory(
+    inventory_id: UUID, session: Session = Depends(get_session)
+):
     item = session.get(ProviderInventory, inventory_id)
     if not item:
         raise HTTPException(status_code=404, detail="Provider inventory not found")
@@ -43,9 +43,9 @@ def read_provider_inventory(inventory_id: UUID, session: Session = Depends(get_s
 
 @router.put("/{inventory_id}", response_model=ProviderInventory)
 def update_provider_inventory(
-        inventory_id: UUID,
-        updates: ProviderInventoryUpdate,
-        session: Session = Depends(get_session)
+    inventory_id: UUID,
+    updates: ProviderInventoryUpdate,
+    session: Session = Depends(get_session),
 ):
     item = session.get(ProviderInventory, inventory_id)
     if not item:
@@ -60,7 +60,9 @@ def update_provider_inventory(
 
 
 @router.delete("/{inventory_id}")
-def delete_provider_inventory(inventory_id: UUID, session: Session = Depends(get_session)):
+def delete_provider_inventory(
+    inventory_id: UUID, session: Session = Depends(get_session)
+):
     item = session.get(ProviderInventory, inventory_id)
     if not item:
         raise HTTPException(status_code=404, detail="Provider inventory not found")

@@ -1,7 +1,15 @@
 from typing import Optional, TYPE_CHECKING, List
 from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text, UniqueConstraint, Relationship
+from sqlmodel import (
+    SQLModel,
+    Field,
+    Column,
+    DateTime,
+    text,
+    UniqueConstraint,
+    Relationship,
+)
 
 from app.models.service import ServiceRead
 from app.models.reviews import ReviewRead
@@ -28,9 +36,15 @@ class Provider(ProviderBase, table=True):
 
     supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
 
-    created_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")))
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+    )
 
-    updated_at: Optional[datetime] = Field(default=None, sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")))
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+    )
 
     services: List["Service"] = Relationship(back_populates="provider")
     reviews: List["Review"] = Relationship(back_populates="provider")

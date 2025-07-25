@@ -15,9 +15,19 @@ from app.models.service import Service
 
 router = APIRouter(prefix="/providers", tags=["providers"], responses={404: {"description": "Not found"}})
 
+router = APIRouter(
+    prefix="/providers",
+    tags=["providers"],
+    responses={404: {"description": "Not found"}},
+)
+
 
 @router.post("/", response_model=Provider)
-async def create_provider(payload: ProviderCreate, supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+async def create_provider(
+    payload: ProviderCreate,
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
 
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if db_provider:
@@ -38,7 +48,10 @@ async def get_all_providers(session: Session = Depends(get_session)):
 
 # AUTH: Return current user's provider record
 @router.get("/me", response_model=Provider)
-async def read_own_provider(supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+async def read_own_provider(
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
 
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if not db_provider:
@@ -56,16 +69,35 @@ async def get_provider_details(provider_id: UUID, session: Session = Depends(get
         raise HTTPException(status_code=404, detail="Provider not found")
 
     recent_reviews = session.exec(
-        select(Review.rating, Review.description, Review.created_at, Customer.first_name, Customer.last_name)
+        select(
+            Review.rating,
+            Review.description,
+            Review.created_at,
+            Customer.first_name,
+            Customer.last_name,
+        )
         .join(Customer, Review.customer_id == Customer.id)
         .where(Review.provider_id == provider_id)
         .order_by(Review.created_at.desc())
         .limit(3)
     ).all()
 
-    review_list = [ReviewRead(customer_name=f"{review.first_name} {review.last_name}", rating=review.rating, description=review.description, created_at=review.created_at) for review in recent_reviews]
+    review_list = [
+        ReviewRead(
+            customer_name=f"{review.first_name} {review.last_name}",
+            rating=review.rating,
+            description=review.description,
+            created_at=review.created_at,
+        )
+        for review in recent_reviews
+    ]
 
-    review_data = session.exec(select(func.count(Review.id).label("count"), func.avg(Review.rating).label("average")).where(Review.provider_id == provider_id)).first()
+    review_data = session.exec(
+        select(
+            func.count(Review.id).label("count"),
+            func.avg(Review.rating).label("average"),
+        ).where(Review.provider_id == provider_id)
+    ).first()
 
     return ProviderResponseDetail(
         id=provider.id,
@@ -87,7 +119,10 @@ async def read_providers_category_name(category_name: str, session: Session = De
             raise HTTPException(status_code=400, detail="category name not found")
 
         results = session.exec(
-            select(Provider.id, Provider.company_name, Provider.first_name, Provider.last_name, Service.services_subcategories).join(Service).where(Service.category == category_enum_val).distinct()
+            select(Provider.id, Provider.company_name, Provider.first_name, Provider.last_name, Service.services_subcategories)
+            .join(Service)
+            .where(Service.category == category_enum_val)
+            .distinct()
         ).all()
 
         return [ProviderCategoryResponse(id=row[0], company_name=row[1], first_name=row[2], last_name=row[3], services=row[4]) for row in results]
@@ -98,7 +133,11 @@ async def read_providers_category_name(category_name: str, session: Session = De
 
 # AUTH: Update current user's provider record
 @router.patch("/me", response_model=Provider)
-async def update_own_provider(update_data: ProviderUpdate, supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+async def update_own_provider(
+    update_data: ProviderUpdate,
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
 
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if not db_provider:
@@ -109,7 +148,10 @@ async def update_own_provider(update_data: ProviderUpdate, supabase_user_id: UUI
 
 # AUTH: Delete current user's provider record
 @router.delete("/me", response_model=dict)
-async def delete_own_provider(supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+async def delete_own_provider(
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
     db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
