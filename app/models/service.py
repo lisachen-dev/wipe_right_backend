@@ -1,8 +1,9 @@
+from datetime import datetime
+from enum import Enum
 from typing import Optional
 from uuid import UUID, uuid4
-from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
-from enum import Enum
+
+from sqlmodel import Column, DateTime, Field, SQLModel, text
 
 
 class ServiceEnum(Enum):
@@ -30,11 +31,15 @@ class Service(ServiceBase, table=True):
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
 

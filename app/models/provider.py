@@ -1,13 +1,16 @@
+from datetime import datetime
 from typing import Optional
 from uuid import UUID, uuid4
-from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text, UniqueConstraint
+
+from sqlmodel import Column, DateTime, Field, SQLModel, UniqueConstraint, text
+
 
 class ProviderBase(SQLModel):
     first_name: str
     last_name: str
     company_name: Optional[str] = None
     phone_number: Optional[str] = None
+
 
 # Full model for DB
 class Provider(ProviderBase, table=True):
@@ -16,26 +19,29 @@ class Provider(ProviderBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
+    supabase_user_id: UUID = Field(
+        nullable=False, index=True, foreign_key="auth.users.id"
+    )
 
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')"))
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
     updated_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')"))
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
 
 # depends on payload schemas
 class ProviderCreate(ProviderBase):
     pass
+
 
 # Schema for update
 class ProviderUpdate(SQLModel):

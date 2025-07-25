@@ -1,11 +1,13 @@
 import uuid
-from fastapi import HTTPException
 
+from fastapi import HTTPException
 from sqlmodel import Session, select
+
 
 # GET ALL
 def get_all(session: Session, model):
     return session.exec(select(model)).all()
+
 
 # GET ONE
 def get_one(session: Session, model, obj_id: uuid.UUID):
@@ -13,6 +15,7 @@ def get_one(session: Session, model, obj_id: uuid.UUID):
     if not obj:
         raise HTTPException(status_code=404, detail=f"{model.__name__} not found")
     return obj
+
 
 # CREATE
 def create_one(session: Session, model, data: dict):
@@ -25,6 +28,7 @@ def create_one(session: Session, model, data: dict):
     session.commit()
     session.refresh(obj)
     return obj
+
 
 # UPDATE
 def update_one(session: Session, model, obj_id: uuid.UUID, update_data: dict):
@@ -40,6 +44,7 @@ def update_one(session: Session, model, obj_id: uuid.UUID, update_data: dict):
     session.commit()
     session.refresh(stored_obj)
     return stored_obj
+
 
 # DELETE
 def delete_one(session: Session, model, obj_id: uuid.UUID):

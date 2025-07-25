@@ -57,7 +57,7 @@ target-version = ["py312"]
 [tool.ruff]
 line-length = 80
 target-version = "py312"
-extend-select = ["I"]
+extend-select = ["E722"]
 exclude = ["migrations", "__pycache__", ".venv"]
 fixable = ["ALL"]
 unfixable = []

@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import Optional
 from uuid import UUID, uuid4
-from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
+
+from sqlmodel import Column, DateTime, Field, SQLModel, text
+
 
 class AddressBase(SQLModel):
     street_address_1: str
@@ -9,6 +11,7 @@ class AddressBase(SQLModel):
     city: str
     state: str
     zip: str
+
 
 class Address(AddressBase, table=True):
     __tablename__ = "addresses"
@@ -18,15 +21,21 @@ class Address(AddressBase, table=True):
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')"))
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
+
 
 class AddressCreate(AddressBase):
     customer_id: UUID
+
 
 class AddressUpdate(SQLModel):
     street_address_1: Optional[str] = None

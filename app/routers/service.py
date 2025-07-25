@@ -1,14 +1,29 @@
 from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
+import logging
 
-from app.models.service import Service, ServiceCreate, ServiceUpdate, ServiceEnum
 from app.db.session import get_session
-from app.utils.crud_helpers import get_all, get_one, create_one, update_one, delete_one
+from app.models.service import (
+    Service,
+    ServiceCreate,
+    ServiceEnum,
+    ServiceUpdate,
+)
+from app.utils.crud_helpers import (
+    create_one,
+    delete_one,
+    get_all,
+    get_one,
+    update_one,
+)
 
-# TODO from app.utils.auth import get_current_user  # optional for auth-locking
+router = APIRouter(
+    prefix="/services", tags=["services"], responses={404: {"description": "Not found"}}
+)
 
-router = APIRouter(prefix="/services", tags=["services"], responses={404: {"description": "Not found"}})
+logger = logging.getLogger(__name__)
 
 
 # GET all services
@@ -25,7 +40,9 @@ async def read_service(service_id: UUID, session: Session = Depends(get_session)
 
 # GET service by category
 @router.get("/category/{category_name}", response_model=list[Service])
-async def read_service_category(category_name: str, session: Session = Depends(get_session)):
+async def read_service_category(
+    category_name: str, session: Session = Depends(get_session)
+):
     # creates an array of all the values in the Service Enum (right side of enum)
     valid_categories = [category.value for category in ServiceEnum]
 
@@ -46,13 +63,16 @@ async def read_service_category(category_name: str, session: Session = Depends(g
         result = session.exec(statement)
         return result.all()
 
-    except:
-        raise HTTPException(status_code=400, detail=f"{Service.__name__} not found")
+    except Exception:
+        logger.exception("Unexpected error while fetching services by category")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # CREATE a service
 @router.post("/", response_model=Service)
-async def create_service(service: ServiceCreate, session: Session = Depends(get_session)):
+async def create_service(
+    service: ServiceCreate, session: Session = Depends(get_session)
+):
     return create_one(session, Service, service.dict())
 
 
@@ -63,7 +83,9 @@ async def update_service(
     update_data: ServiceUpdate,
     session: Session = Depends(get_session),
 ):
-    return update_one(session, Service, service_id, update_data.dict(exclude_unset=True))
+    return update_one(
+        session, Service, service_id, update_data.dict(exclude_unset=True)
+    )
 
 
 # DELETE a service

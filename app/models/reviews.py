@@ -1,11 +1,14 @@
-from typing import Optional
-from uuid import uuid4, UUID
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text
+from typing import Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Column, DateTime, Field, SQLModel, text
+
 
 class ReviewBase(SQLModel):
     rating: int = Field(default=5, ge=1, le=5)
     description: Optional[str] = None
+
 
 class Review(ReviewBase, table=True):
     __tablename__ = "reviews"
@@ -17,16 +20,17 @@ class Review(ReviewBase, table=True):
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')"))
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
     updated_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
-            DateTime(timezone=True),
-            server_default=text("(now() AT TIME ZONE 'utc')"))
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
+
 
 class ReviewCreate(ReviewBase):
     customer_id: UUID
