@@ -16,6 +16,7 @@ class ProviderBase(SQLModel):
     last_name: str
     company_name: Optional[str] = None
     phone_number: Optional[str] = None
+    services_subcategories: Optional[str] = None
 
 
 # Full model for DB
@@ -47,10 +48,14 @@ class ProviderUpdate(SQLModel):
     phone_number: Optional[str] = None
 
 
-class ProviderResponseDetail(SQLModel):
+class ProviderPublicRead(SQLModel):
     id: UUID
     phone_number: Optional[str] = None
+    company_name: Optional[str] = None
     services: list[ServiceRead]
+
+
+class ProviderResponseDetail(ProviderPublicRead):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
@@ -61,3 +66,4 @@ class ProviderCategoryResponse(SQLModel):
     company_name: Optional[str] = None
     first_name: str
     last_name: str
+    services: list[str]

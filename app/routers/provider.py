@@ -4,11 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, func, select
 
 from app.db.session import get_session
-from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail, ProviderCategoryResponse
+from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail, ProviderPublicRead, ProviderCategoryResponse
 from app.models.reviews import Review, ReviewRead
 from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
-from app.utils.crud_helpers import create_one, update_one, delete_one, get_all
+from app.utils.crud_helpers import create_one, update_one, delete_one, get_all, get_one
 from app.utils.user_helpers import get_user_scoped_record
 from app.utils.validate_categories import validate_category
 from app.models.service import Service
@@ -31,8 +31,8 @@ async def create_provider(payload: ProviderCreate, supabase_user_id: UUID = Depe
 
 
 # Return all providers
-@router.get("/all", response_model=list[Provider])
-async def get_all_providers(supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+@router.get("/all", response_model=list[ProviderPublicRead])
+async def get_all_providers(session: Session = Depends(get_session)):
     return get_all(session, Provider)
 
 
@@ -48,9 +48,9 @@ async def read_own_provider(supabase_user_id: UUID = Depends(get_current_user_id
 
 # Return provider details by ID
 @router.get("/{provider_id}", response_model=ProviderResponseDetail)
-async def get_provider_details(provider_id: UUID, supabase_user_id: UUID = Depends(get_current_user_id), session: Session = Depends(get_session)):
+async def get_provider_details(provider_id: UUID, session: Session = Depends(get_session)):
 
-    provider = session.exec(select(Provider).where(Provider.id == provider_id)).first()
+    provider = get_one(session, Provider, provider_id)
 
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
@@ -85,10 +85,14 @@ async def read_providers_category_name(category_name: str, session: Session = De
     try:
         if not category_enum_val:
             raise HTTPException(status_code=400, detail="category name not found")
-        results = session.exec(select(Provider.id, Provider.company_name, Provider.first_name, Provider.last_name).join(Service).where(Service.category == category_enum_val).distinct()).all()
 
-        return [ProviderCategoryResponse(id=row[0], company_name=row[1], first_name=row[2], last_name=row[3]) for row in results]
+        results = session.exec(
+            select(Provider.id, Provider.company_name, Provider.first_name, Provider.last_name, Service.services_subcategories).join(Service).where(Service.category == category_enum_val).distinct()
+        ).all()
+
+        return [ProviderCategoryResponse(id=row[0], company_name=row[1], first_name=row[2], last_name=row[3], services=row[4]) for row in results]
     except Exception as e:
+        print(f"Exception: {e}")
         raise HTTPException(status_code=400, detail=f"Error occurred: {str(e)}")
 
 

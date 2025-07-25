@@ -24,6 +24,7 @@ class ServiceBase(SQLModel):
     pricing: float
     duration: int  # in minutes
     category: Optional[str]
+    services_subcategories: Optional[str] = None
 
 
 class Service(ServiceBase, table=True):
@@ -41,7 +42,8 @@ class Service(ServiceBase, table=True):
         sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
     )
 
-    provider: "Provider" = Relationship(back_populates = "services")
+    provider: "Provider" = Relationship(back_populates="services")
+
 
 class ServiceCreate(ServiceBase):
     provider_id: UUID
@@ -53,5 +55,7 @@ class ServiceUpdate(SQLModel):
     pricing: Optional[float] = None
     duration: Optional[int] = None
 
+
 class ServiceRead(ServiceBase):
     id: UUID
+    services_subcategories: Optional[str] = None
