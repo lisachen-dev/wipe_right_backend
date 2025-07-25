@@ -1,4 +1,4 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, List
 from uuid import UUID, uuid4
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
@@ -7,7 +7,7 @@ from enum import Enum
 
 if TYPE_CHECKING:
     from app.models.provider import Provider
-
+    from app.models.booking import Booking
 
 class ServiceEnum(Enum):
     HOUSE_CLEANING = "housecleaning"
@@ -46,7 +46,7 @@ class Service(ServiceBase, table=True):
     )
 
     provider: "Provider" = Relationship(back_populates="services")
-
+    bookings: List["Booking"] = Relationship(back_populates="service")
 
 class ServiceCreate(ServiceBase):
     provider_id: UUID

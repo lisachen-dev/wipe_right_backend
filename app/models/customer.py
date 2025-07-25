@@ -14,6 +14,7 @@ from sqlmodel import (
 if TYPE_CHECKING:
     from app.models.reviews import Review
     from app.models.address import Address
+    from app.models.booking import Booking
 
 class CustomerBase(SQLModel):
     first_name: str
@@ -47,7 +48,7 @@ class Customer(CustomerBase, table=True):
 
     reviews: List["Review"] = Relationship(back_populates="customer")
     addresses: List["Address"] = Relationship(back_populates="customer")
-
+    bookings: List["Booking"] = Relationship(back_populates="customer")
 
 # depends on payload schemas
 class CustomerCreate(CustomerBase):
