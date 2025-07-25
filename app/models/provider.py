@@ -56,6 +56,7 @@ class ProviderUpdate(SQLModel):
 class ProviderPublicRead(SQLModel):
     id: UUID
     phone_number: Optional[str] = None
+    company_name: Optional[str] = None
     services: list[ServiceRead]
 
 class ProviderResponseDetail(ProviderPublicRead):

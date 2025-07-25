@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, func, select
 
 from app.db.session import get_session
-from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail
+from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail, ProviderPublicRead
 from app.models.reviews import Review, ReviewRead
 from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
@@ -35,7 +35,7 @@ async def create_provider(
     return create_one(session, Provider, provider_data)
 
 # Return all providers
-@router.get("/all", response_model=list[Provider])
+@router.get("/all", response_model=list[ProviderPublicRead])
 async def get_all_providers(
     session: Session = Depends(get_session)
 ):
