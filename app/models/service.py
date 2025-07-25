@@ -1,9 +1,12 @@
-from datetime import datetime
-from enum import Enum
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
+from datetime import datetime
+from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text
+from enum import Enum
+
+if TYPE_CHECKING:
+    from app.models.provider import Provider
 
 
 class ServiceEnum(Enum):
@@ -42,6 +45,8 @@ class Service(ServiceBase, table=True):
         ),
     )
 
+    provider: "Provider" = Relationship(back_populates="services")
+
 
 class ServiceCreate(ServiceBase):
     provider_id: UUID
@@ -52,3 +57,7 @@ class ServiceUpdate(SQLModel):
     service_description: Optional[str] = None
     pricing: Optional[float] = None
     duration: Optional[int] = None
+
+
+class ServiceRead(ServiceBase):
+    id: UUID

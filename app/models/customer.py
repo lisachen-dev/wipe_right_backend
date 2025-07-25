@@ -1,8 +1,18 @@
+from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
-from typing import Optional
 from uuid import UUID, uuid4
+from sqlmodel import (
+    Field,
+    Column,
+    DateTime,
+    text,
+    Relationship,
+    UniqueConstraint,
+    SQLModel,
+)
 
-from sqlmodel import Column, DateTime, Field, SQLModel, UniqueConstraint, text
+if TYPE_CHECKING:
+    from app.models.reviews import Review
 
 
 class CustomerBase(SQLModel):
@@ -35,6 +45,8 @@ class Customer(CustomerBase, table=True):
             DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
         ),
     )
+
+    reviews: List["Review"] = Relationship(back_populates="customer")
 
 
 # depends on payload schemas

@@ -1,8 +1,11 @@
+from typing import Optional, TYPE_CHECKING
+from uuid import uuid4, UUID
 from datetime import datetime
-from typing import Optional
-from uuid import UUID, uuid4
+from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text
+if TYPE_CHECKING:
+    from app.models.provider import Provider
+    from app.models.customer import Customer
 
 
 class ReviewBase(SQLModel):
@@ -31,6 +34,9 @@ class Review(ReviewBase, table=True):
         ),
     )
 
+    provider: "Provider" = Relationship(back_populates="reviews")
+    customer: "Customer" = Relationship(back_populates="reviews")
+
 
 class ReviewCreate(ReviewBase):
     customer_id: UUID
@@ -40,3 +46,8 @@ class ReviewCreate(ReviewBase):
 class ReviewUpdate(SQLModel):
     rating: Optional[int] = Field(default=None, ge=1, le=5)
     description: Optional[str] = None
+
+
+class ReviewRead(ReviewBase):
+    created_at: Optional[datetime]
+    customer_name: str
