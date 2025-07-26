@@ -24,6 +24,7 @@ class ProviderBase(SQLModel):
     last_name: str
     company_name: Optional[str] = None
     phone_number: Optional[str] = None
+    services_subcategories: Optional[str] = None
 
 
 # Full model for DB
@@ -33,22 +34,16 @@ class Provider(ProviderBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(
-        nullable=False, index=True, foreign_key="auth.users.id"
-    )
+    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(
-            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
-        ),
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
     )
 
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(
-            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
-        ),
+        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
     )
 
     services: List["Service"] = Relationship(back_populates="provider")
@@ -78,3 +73,11 @@ class ProviderResponseDetail(ProviderPublicRead):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
+
+
+class ProviderCategoryResponse(SQLModel):
+    id: UUID
+    company_name: Optional[str] = None
+    first_name: str
+    last_name: str
+    services: list[str]

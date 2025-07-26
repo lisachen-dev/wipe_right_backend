@@ -4,18 +4,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, func, select
 
 from app.db.session import get_session
-from app.models.provider import (
-    Provider,
-    ProviderCreate,
-    ProviderUpdate,
-    ProviderResponseDetail,
-    ProviderPublicRead,
-)
+from app.models.provider import Provider, ProviderCreate, ProviderUpdate, ProviderResponseDetail, ProviderPublicRead, ProviderCategoryResponse
 from app.models.reviews import Review, ReviewRead
 from app.models.customer import Customer
 from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import create_one, update_one, delete_one, get_all, get_one
 from app.utils.user_helpers import get_user_scoped_record
+from app.utils.validate_categories import validate_category
+from app.models.service import Service
+
+router = APIRouter(prefix="/providers", tags=["providers"], responses={404: {"description": "Not found"}})
 
 router = APIRouter(
     prefix="/providers",
@@ -63,9 +61,7 @@ async def read_own_provider(
 
 # Return provider details by ID
 @router.get("/{provider_id}", response_model=ProviderResponseDetail)
-async def get_provider_details(
-    provider_id: UUID, session: Session = Depends(get_session)
-):
+async def get_provider_details(provider_id: UUID, session: Session = Depends(get_session)):
 
     provider = get_one(session, Provider, provider_id)
 
@@ -113,6 +109,28 @@ async def get_provider_details(
     )
 
 
+@router.get("/all/{category_name}", response_model=list[ProviderCategoryResponse])
+async def read_providers_category_name(category_name: str, session: Session = Depends(get_session)):
+
+    category_enum_val = validate_category(category_name)
+
+    try:
+        if not category_enum_val:
+            raise HTTPException(status_code=400, detail="category name not found")
+
+        results = session.exec(
+            select(Provider.id, Provider.company_name, Provider.first_name, Provider.last_name, Service.services_subcategories)
+            .join(Service)
+            .where(Service.category == category_enum_val)
+            .distinct()
+        ).all()
+
+        return [ProviderCategoryResponse(id=row[0], company_name=row[1], first_name=row[2], last_name=row[3], services=row[4]) for row in results]
+    except Exception as e:
+        print(f"Exception: {e}")
+        raise HTTPException(status_code=400, detail=f"Error occurred: {str(e)}")
+
+
 # AUTH: Update current user's provider record
 @router.patch("/me", response_model=Provider)
 async def update_own_provider(
@@ -125,9 +143,7 @@ async def update_own_provider(
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
 
-    return update_one(
-        session, Provider, db_provider.id, update_data.model_dump(exclude_unset=True)
-    )
+    return update_one(session, Provider, db_provider.id, update_data.model_dump(exclude_unset=True))
 
 
 # AUTH: Delete current user's provider record
