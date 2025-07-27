@@ -56,6 +56,14 @@ class ServiceUpdate(SQLModel):
     duration: Optional[int] = None
 
 
+class ServiceResponseProvider(SQLModel):
+    id: UUID
+    service_title: str
+    service_description: Optional[str] = None
+    pricing: float
+    duration: int 
+    category: Optional[str]
+
+
 class ServiceRead(ServiceBase):
     id: UUID
-    services_subcategories: Optional[str] = None

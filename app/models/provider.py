@@ -11,7 +11,7 @@ from sqlmodel import (
     Relationship,
 )
 
-from app.models.service import ServiceRead
+from app.models.service import ServiceResponseProvider
 from app.models.reviews import ReviewRead
 
 if TYPE_CHECKING:
@@ -24,7 +24,6 @@ class ProviderBase(SQLModel):
     last_name: str
     company_name: Optional[str] = None
     phone_number: Optional[str] = None
-    services_subcategories: Optional[str] = None
 
 
 # Full model for DB
@@ -66,7 +65,7 @@ class ProviderPublicRead(SQLModel):
     id: UUID
     phone_number: Optional[str] = None
     company_name: Optional[str] = None
-    services: list[ServiceRead]
+    services: list[ServiceResponseProvider]
 
 
 class ProviderResponseDetail(ProviderPublicRead):
