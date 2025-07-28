@@ -1,11 +1,11 @@
 # Formatting and Linting
 format-all:
-	ruff format .
-	ruff check . --fix
+	uv run ruff format .
+	uv run ruff check . --fix
 
 lint-all:
-	ruff check .
+	uv run ruff check .
 
 # Execution
 run:
-	uvicorn app.main:app --reload
+	uv run uvicorn app.main:app --reload
