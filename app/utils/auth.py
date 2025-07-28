@@ -48,7 +48,6 @@ async def _supabase_get_user(token: str) -> Dict[str, Any]:
 async def get_current_user_id(
     auth_creds: Optional[HTTPAuthorizationCredentials] = Depends(auth_bearer_token),
 ) -> UUID:
-
     # Extract the bearer token (already validated by HTTPBearer) and return validated Supabase user in json
     auth_user_data = await _supabase_get_user(auth_creds.credentials)
     try:

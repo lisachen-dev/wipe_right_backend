@@ -19,7 +19,6 @@ def get_one(session: Session, model, obj_id: uuid.UUID):
 
 # CREATE
 def create_one(session: Session, model, data: dict):
-
     # Get the data the user sends
     obj = model(**data)
 
