@@ -19,10 +19,12 @@ if TYPE_CHECKING:
     from app.models.address import Address
     from app.models.booking import Booking
 
+
 class CustomerBase(SQLModel):
     first_name: str
     last_name: str
     phone_number: Optional[str] = None
+
 
 # Full model for DB
 class Customer(CustomerBase, table=True):
@@ -53,15 +55,18 @@ class Customer(CustomerBase, table=True):
     addresses: List["Address"] = Relationship(back_populates="customer")
     bookings: List["Booking"] = Relationship(back_populates="customer")
 
+
 # depends on payload schemas
 class CustomerCreate(CustomerBase):
     pass
+
 
 # Schema for update
 class CustomerUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
+
 
 # Used to test customer relationships
 class CustomerRead(CustomerBase):

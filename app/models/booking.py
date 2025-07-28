@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from app.models.provider import Provider
     from app.models.service import Service
 
+
 class BookingBase(SQLModel):
     special_instructions: Optional[str] = None
     service_notes: Optional[str] = None
@@ -40,6 +41,7 @@ class Booking(BookingBase, table=True):
     customer: "Customer" = Relationship(back_populates="bookings")
     provider: "Provider" = Relationship(back_populates="bookings")
     service: "Service" = Relationship(back_populates="bookings")
+
 
 class BookingCreate(BookingBase):
     customer_id: UUID

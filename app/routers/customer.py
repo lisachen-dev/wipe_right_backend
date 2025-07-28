@@ -15,13 +15,13 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.post("/", response_model=Customer)
 async def create_customer(
     payload: CustomerCreate,
     supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-
     db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
     if db_customer:
         raise HTTPException(status_code=400, detail="Customer already exists")
@@ -39,19 +39,18 @@ async def read_own_customer(
     supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-
     db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
 
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
     return db_customer
 
+
 # Used to test customer relationships
 @router.get("/all", response_model=list[CustomerRead])
-async def read_all_customers(
-    session: Session = Depends(get_session)
-):
+async def read_all_customers(session: Session = Depends(get_session)):
     return get_all(session, Customer)
+
 
 # AUTH: Update current user's customer record
 @router.patch("/me", response_model=Customer)
@@ -60,7 +59,6 @@ async def update_own_customer(
     supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-
     db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
 
     if not db_customer:

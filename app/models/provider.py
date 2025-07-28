@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from app.models.reviews import Review
     from app.models.booking import Booking
 
+
 class ProviderBase(SQLModel):
     first_name: str
     last_name: str
@@ -33,21 +34,28 @@ class Provider(ProviderBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
+    supabase_user_id: UUID = Field(
+        nullable=False, index=True, foreign_key="auth.users.id"
+    )
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
     services: List["Service"] = Relationship(back_populates="provider")
     reviews: List["Review"] = Relationship(back_populates="provider")
     bookings: List["Booking"] = Relationship(back_populates="provider")
+
 
 # depends on payload schemas
 class ProviderCreate(ProviderBase):
