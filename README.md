@@ -13,7 +13,7 @@ This is the backend API for the Wipe Right project, built with **FastAPI**, **SQ
   - [📦 Install Dependencies](#-install-dependencies)
   - [🔐 Configure Environment Variables](#-configure-environment-variables)
 - [🧰 Prerequisites & Tooling](#-prerequisites--tooling)
-- [▶️ Run the Server](#️-run-the-server)
+- [▶️ Run the Server](#-run-the-server)
 - [📚 API Docs](#-api-docs)
 - [🔑 Authentication](#-authentication)
 - [🧱 Code Style & Formatting](#-code-style--formatting)
