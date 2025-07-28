@@ -1,4 +1,5 @@
 # Formatting and Linting
+# Make file test
 format-all:
 	@echo "[LINT/FORMAT IN PROGRESS] Running Ruff format and lint fix..."
 	uv run ruff format .
