@@ -6,3 +6,5 @@ repos:
           entry: make format-all
           language: system
           types: [python]
+          pass_filenames: false
+          verbose: true
