@@ -11,7 +11,7 @@ This is the backend API for the Wipe Right project, built with **FastAPI**, **SQ
 - [⚡ Quickstart](#-quickstart)
 - [🆕 First-Time Setup](#-first-time-setup)
   - [📦 Install Dependencies](#-install-dependencies)
-  - [🔐 Environment Variables](#-environment-variables)
+  - [🔐 Configure Environment Variables](#-configure-environment-variables)
 - [🧰 Prerequisites & Tooling](#-prerequisites--tooling)
 - [▶️ Run the Server](#️-run-the-server)
 - [📚 API Docs](#-api-docs)

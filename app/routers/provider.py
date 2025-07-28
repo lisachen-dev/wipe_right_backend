@@ -26,12 +26,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-router = APIRouter(
-    prefix="/providers",
-    tags=["providers"],
-    responses={404: {"description": "Not found"}},
-)
-
 
 @router.post("/", response_model=Provider)
 async def create_provider(
