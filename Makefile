@@ -1,12 +1,10 @@
 # Formatting and Linting
 format-all:
-	black . && ruff check . --fix
+	ruff format .
+	ruff check . --fix
 
 lint-all:
 	ruff check .
-
-safe-fix:
-	ruff check . --fix
 
 # Execution
 run:

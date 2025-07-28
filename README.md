@@ -134,7 +134,7 @@ uv run uvicorn app.main:app --reload
 
 
 > **This will start the server on http://127.0.0.1:8000**
-> 
+>
 > You’ll see logs in your terminal showing the server is running. To stop the server, press Ctrl + C.
 
 ---
@@ -209,25 +209,24 @@ You can find these values in your Supabase project under `Settings` → `API`.
 
 This project uses:
 
-- [`black`](https://black.readthedocs.io/) – for automatic code formatting
-- [`ruff`](https://docs.astral.sh/ruff/) – for linting and import sorting
+- [`ruff`](https://docs.astral.sh/ruff/) – for **linting**, **formatting**, and **import sorting**
 
 ### 🔧 Common Commands
 
 | Task            | Makefile Command      | Direct Command |
 |-----------------|------------------------|----------------|
-| Format code     | `make format-all`      | `uv run black . && uv run ruff check . --fix` |
+| Format code     | `make format-all`      | `ruff format . && ruff check . --fix` |
 | Lint code       | `make lint-all`        | `uv run ruff check .` |
-| Auto-fix issues | `make safe-fix`        | `uv run ruff check . --fix` |
 
 ### 🎯 Target a specific file or folder:
 
 ```bash
-uv run black app/models/customer.py
+uv run ruff format app/models/customer.py
 uv run ruff check app/routers/ --fix
 ```
 
-> Linting and formatting settings are defined in pyproject.toml. VS Code uses .vscode/settings.json to enforce format/lint on save.
+> Linting and formatting settings are defined in pyproject.toml.
+> VS Code uses .vscode/settings.json to enforce format/lint on save.
 
 ---
 
@@ -270,13 +269,13 @@ psycopg2.OperationalError: could not translate host name ...
 
 ### 🛠 Other Tips
 
-- ❌ `make: command not found`  
+- ❌ `make: command not found`
   → Run `make --version` to confirm it's installed. On Windows, use **Git Bash**, **WSL**, or install `make` with Chocolatey (`choco install make` as Administrator).
 
-- ❌ `ModuleNotFoundError`  
+- ❌ `ModuleNotFoundError`
   → Make sure you've run `uv sync` and you're in the right virtual environment (`.venv`).
 
-- ❌ Swagger UI not loading?  
+- ❌ Swagger UI not loading?
   → Ensure your server is running at [http://127.0.0.1:8000](http://127.0.0.1:8000) and reload the page.
 
 > Still stuck? Drop a screenshot and we’ll debug together 💬
