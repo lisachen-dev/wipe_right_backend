@@ -1,15 +1,24 @@
 from sqlmodel import Session, select
 
 from app.db.engine import engine
-from app.models.provider import Provider
+from app.models import Provider, Service
+from uuid import UUID
 
 
 def seed_provider():
-    new_provider = Provider(
-        email="gottacatchemall",
-        phone_number=1234567890,
-        user_id="2b07e53d-e98d-42d0-a2d3-d5c0f805f0fb",
+    # new_provider = Provider(
+    #     email="gottacatchemall", phone_number=1234567890, user_id="2b07e53d-e98d-42d0-a2d3-d5c0f805f0fb", first_name="time", last_name="jones"
+    # )
+    new_provider = Service(
+        service_title="lawn",
+        service_description="cleans lawn for the clients",
+        provider_id=UUID("db846969-e83a-4956-b6fc-8e1e735bcd5b"),
+        pricing=30,
+        duration=60,
+        category="SPECIALIZED_CLEANING",
+        services_subcategories=["Lawn Mowing", "Edging", "Weeding", "Fertilization"],
     )
+
     with Session(engine) as session:
         session.add(new_provider)
         session.commit()
@@ -28,4 +37,4 @@ def select_providers():
 
 if __name__ == "__main__":
     seed_provider()
-    select_providers()
+    # select_providers()
