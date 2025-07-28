@@ -1,8 +1,8 @@
 repos:
     - repo: local
-        hooks:
+      hooks:
         - id: format-all
-            name: Format and fix Python with Ruff
-            entry: make format-all
-            language: system
-            types: [python]
+          name: Format and fix Python with Ruff
+          entry: make format-all
+          language: system
+          types: [python]
