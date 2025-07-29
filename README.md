@@ -98,22 +98,22 @@ This project assumes you're using **VS Code** as your editor.
 | `make`       | Task runner for common scripts   | **Mac/Linux/WSL/Git Bash:** Already installed<br>**Windows (CMD/Powershell):*** `choco install make`<br>✅ To confirm `make` is installed, run: <br>`make --version`|
 | `.env` file  | Local env variables              | Copy `.env_example` to `.env` and configure manually |
 
-> * _Note: you will need to run this as an Administrator (i.e. right-click on the CommandPrompt program before opening it and Run as Admin_)
+> * _Note: You only need `make` installed to run project commands. The VSCode Makefile extension is optional and not required._
 ---
 
-### 💻 VS Code Extensions (Recommended for full workflow)
+### 💻 VS Code Extensions (Optional, but Recommended)
+
+The following extensions improve your experience in VS Code but are **not required**:
 
 - [Makefile Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.makefile-tools)
 - [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
 - [Ruff (Linter)](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
 
-> 💡 **To experience the full developer workflow**, install all of the extensions above and open the `backend/` folder in VS Code.
+> If you install these, VS Code will detect `.vscode/settings.json` and enable:
 
-VS Code will auto-detect `.vscode/settings.json`, which enables:
-
-- ✅ Format on save using `black`
-- ✅ Lint on save using `ruff`
-- ✅ Sort imports using `ruff`
+- ✅ Format on save using `ruff`
+- ✅ Lint on save
+- ✅ Auto-sort imports
 
 ---
 
@@ -210,6 +210,14 @@ You can find these values in your Supabase project under `Settings` → `API`.
 This project uses:
 
 - [`ruff`](https://docs.astral.sh/ruff/) – for **linting**, **formatting**, and **import sorting**
+
+✅ Pre-commit and GitHub Actions automatically enforce linting and formatting.
+
+| Tool           | Runs When                    | Purpose                                    |
+| -------------- | ---------------------------- | ------------------------------------------ |
+| `pre-commit`   | Before each commit (locally) | Auto-format staged changes                 |
+| GitHub Actions | On every push                | Validates formatting and lints entire repo |
+
 
 ### 🔧 Common Commands
 

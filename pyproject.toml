@@ -1,5 +1,5 @@
 [project]
-name = "team-corgi"
+name = "wipe-right"
 version = "0.1.0"
 description = "Corgi backends are cute"
 readme = "README.md"
@@ -24,6 +24,7 @@ dependencies = [
     "markdown-it-py==3.0.0",
     "markupsafe==3.0.2",
     "mdurl==0.1.2",
+    "pre-commit==4.2.0",
     "psycopg2-binary==2.9.10",
     "pydantic==2.8.2",
     "pydantic-core==2.20.1",
