@@ -11,13 +11,14 @@ from sqlmodel import (
     Relationship,
 )
 
-from app.models.service import ServiceRead
+from app.models.service import ServiceResponseProvider
 from app.models.reviews import ReviewRead
 
 if TYPE_CHECKING:
     from app.models.service import Service
     from app.models.reviews import Review
     from app.models.booking import Booking
+
 
 class ProviderBase(SQLModel):
     first_name: str
@@ -55,6 +56,7 @@ class Provider(ProviderBase, table=True):
     reviews: List["Review"] = Relationship(back_populates="provider")
     bookings: List["Booking"] = Relationship(back_populates="provider")
 
+
 # depends on payload schemas
 class ProviderCreate(ProviderBase):
     pass
@@ -71,10 +73,18 @@ class ProviderPublicRead(SQLModel):
     id: UUID
     phone_number: Optional[str] = None
     company_name: Optional[str] = None
-    services: list[ServiceRead]
+    services: list[ServiceResponseProvider]
 
 
 class ProviderResponseDetail(ProviderPublicRead):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
+
+
+class ProviderCategoryResponse(SQLModel):
+    id: UUID
+    company_name: Optional[str] = None
+    first_name: str
+    last_name: str
+    services: list[str]

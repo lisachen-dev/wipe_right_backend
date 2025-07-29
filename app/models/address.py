@@ -7,12 +7,14 @@ from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
 if TYPE_CHECKING:
     from app.models.customer import Customer
 
+
 class AddressBase(SQLModel):
     street_address_1: str
     street_address_2: Optional[str] = None
     city: str
     state: str
     zip: str
+
 
 class Address(AddressBase, table=True):
     __tablename__ = "addresses"
@@ -34,6 +36,7 @@ class Address(AddressBase, table=True):
     )
 
     customer: "Customer" = Relationship(back_populates="addresses")
+
 
 class AddressCreate(AddressBase):
     customer_id: UUID

@@ -5,7 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.customer import Customer, CustomerCreate, CustomerUpdate, CustomerRead, CustomersBookings
+from app.models.customer import (
+    Customer,
+    CustomerCreate,
+    CustomerUpdate,
+    CustomerRead,
+    CustomersBookings,
+)
 from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import create_one, delete_one, update_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
@@ -24,7 +30,6 @@ async def create_customer(
     supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-
     db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
     if db_customer:
         raise HTTPException(status_code=400, detail="Customer already exists")
@@ -42,7 +47,6 @@ async def read_own_customer(
     supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-
     db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
 
     if not db_customer:
@@ -58,13 +62,16 @@ async def read_all_customers(session: Session = Depends(get_session)):
 
 # GET all upcoming bookings and need review bookings for current customer
 @router.get("/{customer_id}/dashboard", response_model=CustomersBookings)
-async def read_users_bookings(customer_id: UUID, session: Session = Depends(get_session)):
-
+async def read_users_bookings(
+    customer_id: UUID, session: Session = Depends(get_session)
+):
     if not customer_id:
         raise HTTPException(status_code=400, detail="user id not found")
 
     # Get bookings for the specific customer
-    bookings = session.exec(select(Booking).where(Booking.customer_id == customer_id)).all()
+    bookings = session.exec(
+        select(Booking).where(Booking.customer_id == customer_id)
+    ).all()
 
     completed_needs_review = []
     upcoming_bookings = []
@@ -74,7 +81,10 @@ async def read_users_bookings(customer_id: UUID, session: Session = Depends(get_
         elif booking.status != StatusEnum.cancelled:
             upcoming_bookings.append(booking)
 
-    return CustomersBookings(completed_needs_review=completed_needs_review, upcoming_bookings=upcoming_bookings)  # return upcoming_bookings
+    return CustomersBookings(
+        completed_needs_review=completed_needs_review,
+        upcoming_bookings=upcoming_bookings,
+    )  # return upcoming_bookings
 
 
 # AUTH: Update current user's customer record
@@ -84,7 +94,6 @@ async def update_own_customer(
     supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
-
     db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
 
     if not db_customer:
@@ -92,7 +101,9 @@ async def update_own_customer(
 
     # Type cast since we know it's a Customer instance
     customer = cast(Customer, db_customer)
-    return update_one(session, Customer, customer.id, update_data.model_dump(exclude_unset=True))
+    return update_one(
+        session, Customer, customer.id, update_data.model_dump(exclude_unset=True)
+    )
 
 
 # AUTH: Delete current user's customer record

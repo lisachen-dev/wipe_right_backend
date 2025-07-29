@@ -11,9 +11,9 @@ This is the backend API for the Wipe Right project, built with **FastAPI**, **SQ
 - [⚡ Quickstart](#-quickstart)
 - [🆕 First-Time Setup](#-first-time-setup)
   - [📦 Install Dependencies](#-install-dependencies)
-  - [🔐 Environment Variables](#-environment-variables)
+  - [🔐 Configure Environment Variables](#-configure-environment-variables)
 - [🧰 Prerequisites & Tooling](#-prerequisites--tooling)
-- [▶️ Run the Server](#️-run-the-server)
+- [▶️ Run the Server](#-run-the-server)
 - [📚 API Docs](#-api-docs)
 - [🔑 Authentication](#-authentication)
 - [🧱 Code Style & Formatting](#-code-style--formatting)
@@ -98,22 +98,22 @@ This project assumes you're using **VS Code** as your editor.
 | `make`       | Task runner for common scripts   | **Mac/Linux/WSL/Git Bash:** Already installed<br>**Windows (CMD/Powershell):*** `choco install make`<br>✅ To confirm `make` is installed, run: <br>`make --version`|
 | `.env` file  | Local env variables              | Copy `.env_example` to `.env` and configure manually |
 
-> * _Note: you will need to run this as an Administrator (i.e. right-click on the CommandPrompt program before opening it and Run as Admin_)
+> * _Note: You only need `make` installed to run project commands. The VSCode Makefile extension is optional and not required._
 ---
 
-### 💻 VS Code Extensions (Recommended for full workflow)
+### 💻 VS Code Extensions (Optional, but Recommended)
+
+The following extensions improve your experience in VS Code but are **not required**:
 
 - [Makefile Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.makefile-tools)
 - [Python Extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
 - [Ruff (Linter)](https://marketplace.visualstudio.com/items?itemName=charliermarsh.ruff)
 
-> 💡 **To experience the full developer workflow**, install all of the extensions above and open the `backend/` folder in VS Code.
+> If you install these, VS Code will detect `.vscode/settings.json` and enable:
 
-VS Code will auto-detect `.vscode/settings.json`, which enables:
-
-- ✅ Format on save using `black`
-- ✅ Lint on save using `ruff`
-- ✅ Sort imports using `ruff`
+- ✅ Format on save using `ruff`
+- ✅ Lint on save
+- ✅ Auto-sort imports
 
 ---
 
@@ -134,7 +134,7 @@ uv run uvicorn app.main:app --reload
 
 
 > **This will start the server on http://127.0.0.1:8000**
-> 
+>
 > You’ll see logs in your terminal showing the server is running. To stop the server, press Ctrl + C.
 
 ---
@@ -209,25 +209,32 @@ You can find these values in your Supabase project under `Settings` → `API`.
 
 This project uses:
 
-- [`black`](https://black.readthedocs.io/) – for automatic code formatting
-- [`ruff`](https://docs.astral.sh/ruff/) – for linting and import sorting
+- [`ruff`](https://docs.astral.sh/ruff/) – for **linting**, **formatting**, and **import sorting**
+
+✅ Pre-commit and GitHub Actions automatically enforce linting and formatting.
+
+| Tool           | Runs When                    | Purpose                                    |
+| -------------- | ---------------------------- | ------------------------------------------ |
+| `pre-commit`   | Before each commit (locally) | Auto-format staged changes                 |
+| GitHub Actions | On every push                | Validates formatting and lints entire repo |
+
 
 ### 🔧 Common Commands
 
 | Task            | Makefile Command      | Direct Command |
 |-----------------|------------------------|----------------|
-| Format code     | `make format-all`      | `uv run black . && uv run ruff check . --fix` |
+| Format code     | `make format-all`      | `ruff format . && ruff check . --fix` |
 | Lint code       | `make lint-all`        | `uv run ruff check .` |
-| Auto-fix issues | `make safe-fix`        | `uv run ruff check . --fix` |
 
 ### 🎯 Target a specific file or folder:
 
 ```bash
-uv run black app/models/customer.py
+uv run ruff format app/models/customer.py
 uv run ruff check app/routers/ --fix
 ```
 
-> Linting and formatting settings are defined in pyproject.toml. VS Code uses .vscode/settings.json to enforce format/lint on save.
+> Linting and formatting settings are defined in pyproject.toml.
+> VS Code uses .vscode/settings.json to enforce format/lint on save.
 
 ---
 
@@ -270,13 +277,13 @@ psycopg2.OperationalError: could not translate host name ...
 
 ### 🛠 Other Tips
 
-- ❌ `make: command not found`  
+- ❌ `make: command not found`
   → Run `make --version` to confirm it's installed. On Windows, use **Git Bash**, **WSL**, or install `make` with Chocolatey (`choco install make` as Administrator).
 
-- ❌ `ModuleNotFoundError`  
+- ❌ `ModuleNotFoundError`
   → Make sure you've run `uv sync` and you're in the right virtual environment (`.venv`).
 
-- ❌ Swagger UI not loading?  
+- ❌ Swagger UI not loading?
   → Ensure your server is running at [http://127.0.0.1:8000](http://127.0.0.1:8000) and reload the page.
 
 > Still stuck? Drop a screenshot and we’ll debug together 💬

@@ -34,16 +34,22 @@ class Customer(CustomerBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(nullable=False, index=True, foreign_key="auth.users.id")
+    supabase_user_id: UUID = Field(
+        nullable=False, index=True, foreign_key="auth.users.id"
+    )
 
     created_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
     updated_at: Optional[datetime] = Field(
         default=None,
-        sa_column=Column(DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")),
+        sa_column=Column(
+            DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
+        ),
     )
 
     reviews: List["Review"] = Relationship(back_populates="customer")

@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from app.models.provider import Provider
     from app.models.booking import Booking
 
+
 class ServiceEnum(Enum):
     HOUSE_CLEANING = "housecleaning"
     LAWN_AND_GARDEN = "lawnandgarden"
@@ -24,6 +25,7 @@ class ServiceBase(SQLModel):
     pricing: float
     duration: int  # in minutes
     category: Optional[str]
+    services_subcategories: Optional[str] = None
 
 
 class Service(ServiceBase, table=True):
@@ -48,6 +50,7 @@ class Service(ServiceBase, table=True):
     provider: "Provider" = Relationship(back_populates="services")
     bookings: List["Booking"] = Relationship(back_populates="service")
 
+
 class ServiceCreate(ServiceBase):
     provider_id: UUID
 
@@ -57,6 +60,15 @@ class ServiceUpdate(SQLModel):
     service_description: Optional[str] = None
     pricing: Optional[float] = None
     duration: Optional[int] = None
+
+
+class ServiceResponseProvider(SQLModel):
+    id: UUID
+    service_title: str
+    service_description: Optional[str] = None
+    pricing: float
+    duration: int
+    category: Optional[str]
 
 
 class ServiceRead(ServiceBase):

@@ -1,13 +1,14 @@
-# Formatting and Linting
 format-all:
-	black . && ruff check . --fix
+	@echo "[LINT/FORMAT IN PROGRESS] Running Ruff format and lint fix..."
+	uv run ruff format .
+	uv run ruff check . --fix
+	@echo "[FORMAT COMPLETE]"
 
 lint-all:
-	ruff check .
-
-safe-fix:
-	ruff check . --fix
+	@echo "[LINT IN PROGRESS]"
+	uv run ruff check .
+	@echo "[LINT COMPLETE]"
 
 # Execution
 run:
-	uvicorn app.main:app --reload
+	uv run uvicorn app.main:app --reload

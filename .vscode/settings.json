@@ -1,9 +1,16 @@
 {
-   "editor.formatOnSave": true,
-   "editor.defaultFormatter": "ms-python.python",
    "[python]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "charliermarsh.ruff",
       "editor.codeActionsOnSave": {
       "source.organizeImports": "explicit"
       }
-   }
+   },
+   "[yaml]": {
+   "editor.insertSpaces": true,
+   "editor.tabSize": 4,
+   "editor.formatOnSave": true
+   },
+   "yaml.format.indent": 4,
+   "yaml.validate": true
 }
