@@ -1,13 +1,23 @@
 from uuid import UUID
+from typing import cast
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.customer import Customer, CustomerCreate, CustomerUpdate, CustomerRead
+from app.models.customer import (
+    Customer,
+    CustomerCreate,
+    CustomerUpdate,
+    CustomerRead,
+    CustomersBookings,
+)
 from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import create_one, delete_one, update_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
+from app.models.booking import Booking, StatusEnum
+from app.models.provider import Provider
+from app.models.service import Service
 
 router = APIRouter(
     prefix="/customers",
@@ -52,6 +62,61 @@ async def read_all_customers(session: Session = Depends(get_session)):
     return get_all(session, Customer)
 
 
+# GET all upcoming bookings and need review bookings for current customer
+@router.get("/{customer_id}/dashboard", response_model=CustomersBookings)
+async def read_users_bookings(
+    customer_id: UUID, session: Session = Depends(get_session)
+):
+    if not customer_id:
+        raise HTTPException(status_code=400, detail="user id not found")
+
+    # Get bookings for the specific customer
+    bookings = session.exec(
+        select(
+            Booking.start_time,
+            Booking.status,
+            Provider.company_name,
+            Provider.first_name,
+            Provider.last_name,
+            Service.service_title,
+        )
+        .join(Provider, Provider.id == Booking.provider_id)
+        .join(Service, Service.id == Booking.service_id)
+        .where(Booking.customer_id == customer_id)
+    ).all()
+
+    completed_needs_review = []
+    upcoming_bookings = []
+    for booking in bookings:
+        booking_dict = dict(booking._asdict())
+        if booking.status == StatusEnum.review_needed:
+            completed_needs_review.append(
+                {
+                    **booking_dict,
+                    "provider_first_name": booking_dict["first_name"],
+                    "provider_last_name": booking_dict["last_name"],
+                    "provider_company_name": booking_dict["company_name"],
+                }
+            )
+        elif (
+            booking.status != StatusEnum.cancelled
+            or booking.status != StatusEnum.completed
+        ):
+            upcoming_bookings.append(
+                {
+                    **booking_dict,
+                    "provider_first_name": booking_dict["first_name"],
+                    "provider_last_name": booking_dict["last_name"],
+                    "provider_company_name": booking_dict["company_name"],
+                }
+            )
+
+    return CustomersBookings(
+        completed_needs_review=completed_needs_review,
+        upcoming_bookings=upcoming_bookings,
+    )
+
+
 # AUTH: Update current user's customer record
 @router.patch("/me", response_model=Customer)
 async def update_own_customer(
@@ -64,8 +129,10 @@ async def update_own_customer(
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
+    # Type cast since we know it's a Customer instance
+    customer = cast(Customer, db_customer)
     return update_one(
-        session, Customer, db_customer.id, update_data.model_dump(exclude_unset=True)
+        session, Customer, customer.id, update_data.model_dump(exclude_unset=True)
     )
 
 
@@ -80,4 +147,6 @@ async def delete_own_customer(
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    return delete_one(session, Customer, db_customer.id)
+    # Type cast since we know it's a Customer instance
+    customer = cast(Customer, db_customer)
+    return delete_one(session, Customer, customer.id)
