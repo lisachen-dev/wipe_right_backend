@@ -35,9 +35,7 @@ class Provider(ProviderBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(
-        nullable=False, index=True, foreign_key="auth.users.id"
-    )
+    supabase_user_id: UUID = Field(nullable=False, index=True)
 
     created_at: Optional[datetime] = Field(
         default=None,
@@ -67,6 +65,7 @@ class ProviderCreate(ProviderBase):
 class ProviderUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+    company_name: Optional[str] = None
     phone_number: Optional[str] = None
 
 
