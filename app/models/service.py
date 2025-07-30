@@ -3,7 +3,8 @@ from enum import Enum
 from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
+from sqlalchemy import String
+from sqlmodel import ARRAY, Column, DateTime, Field, Relationship, SQLModel, text
 
 if TYPE_CHECKING:
     from app.models.booking import Booking
@@ -25,7 +26,9 @@ class ServiceBase(SQLModel):
     pricing: float
     duration: int  # in minutes
     category: Optional[str]
-    services_subcategories: Optional[str] = None
+    services_subcategories: List[str] = Field(
+        default=None, sa_column=Column(ARRAY(String))
+    )
 
 
 class Service(ServiceBase, table=True):
