@@ -98,7 +98,10 @@ async def read_users_bookings(
                     "provider_company_name": booking_dict["company_name"],
                 }
             )
-        elif booking.status != StatusEnum.cancelled:
+        elif (
+            booking.status != StatusEnum.cancelled
+            or booking.status != StatusEnum.completed
+        ):
             upcoming_bookings.append(
                 {
                     **booking_dict,
