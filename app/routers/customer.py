@@ -16,6 +16,8 @@ from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import create_one, delete_one, update_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
 from app.models.booking import Booking, StatusEnum
+from app.models.provider import Provider
+from app.models.service import Service
 
 router = APIRouter(
     prefix="/customers",
@@ -70,21 +72,46 @@ async def read_users_bookings(
 
     # Get bookings for the specific customer
     bookings = session.exec(
-        select(Booking).where(Booking.customer_id == customer_id)
+        select(
+            Booking.start_time,
+            Booking.status,
+            Provider.company_name,
+            Provider.first_name,
+            Provider.last_name,
+            Service.service_title,
+        )
+        .join(Provider, Provider.id == Booking.provider_id)
+        .join(Service, Service.id == Booking.service_id)
+        .where(Booking.customer_id == customer_id)
     ).all()
 
     completed_needs_review = []
     upcoming_bookings = []
     for booking in bookings:
+        booking_dict = dict(booking._asdict())
         if booking.status == StatusEnum.review_needed:
-            completed_needs_review.append(booking)
+            completed_needs_review.append(
+                {
+                    **booking_dict,
+                    "provider_first_name": booking_dict["first_name"],
+                    "provider_last_name": booking_dict["last_name"],
+                    "provider_company_name": booking_dict["company_name"],
+                }
+            )
         elif booking.status != StatusEnum.cancelled:
-            upcoming_bookings.append(booking)
+            upcoming_bookings.append(
+                {
+                    **booking_dict,
+                    "provider_first_name": booking_dict["first_name"],
+                    "provider_last_name": booking_dict["last_name"],
+                    "provider_company_name": booking_dict["company_name"],
+                }
+            )
 
     return CustomersBookings(
         completed_needs_review=completed_needs_review,
         upcoming_bookings=upcoming_bookings,
-    )  # return upcoming_bookings
+    )
 
 
 # AUTH: Update current user's customer record
