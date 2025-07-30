@@ -13,7 +13,7 @@ from sqlmodel import (
 )
 
 from app.models.address import AddressBase
-from app.models.booking import BookingBase
+from app.models.booking import Booking, BookingBase, StatusEnum
 
 if TYPE_CHECKING:
     from app.models.address import Address
@@ -71,3 +71,17 @@ class CustomerUpdate(SQLModel):
 class CustomerRead(CustomerBase):
     addresses: list[AddressBase]
     bookings: list[BookingBase]
+
+
+class CurrentBookings(SQLModel):
+    provider_first_name: str
+    provider_last_name: str
+    provider_company_name: str
+    status: StatusEnum
+    start_time: datetime
+    service_title: str
+
+
+class CustomersBookings(SQLModel):
+    upcoming_bookings: List[CurrentBookings]
+    completed_needs_review: List[CurrentBookings]
