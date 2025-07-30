@@ -9,7 +9,6 @@ from app.models.customer import (
     Customer,
     CustomerCreate,
     CustomerUpdate,
-    CustomerRead,
     CustomersBookings,
 )
 from app.utils.auth import get_current_user_id
@@ -57,7 +56,7 @@ async def read_own_customer(
 
 
 # Used to test customer relationships
-@router.get("/all", response_model=list[CustomerRead])
+@router.get("/all", response_model=list[Customer])
 async def read_all_customers(session: Session = Depends(get_session)):
     return get_all(session, Customer)
 

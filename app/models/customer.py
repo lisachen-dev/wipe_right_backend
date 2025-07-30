@@ -12,9 +12,7 @@ from sqlmodel import (
     SQLModel,
 )
 
-
-from app.models.address import AddressBase
-from app.models.booking import BookingBase, StatusEnum
+from app.models.booking import StatusEnum
 
 if TYPE_CHECKING:
     from app.models.reviews import Review
@@ -68,12 +66,6 @@ class CustomerUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
-
-
-# Used to test customer relationships
-class CustomerRead(CustomerBase):
-    addresses: list[AddressBase]
-    bookings: list[BookingBase]
 
 
 class CurrentBookings(SQLModel):

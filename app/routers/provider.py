@@ -19,6 +19,7 @@ from app.utils.crud_helpers import create_one, update_one, delete_one, get_all, 
 from app.utils.user_helpers import get_user_scoped_record
 from app.utils.validate_categories import validate_category
 from app.models.service import Service
+from app.models.booking import Booking
 
 router = APIRouter(
     prefix="/providers",
@@ -60,6 +61,21 @@ async def read_own_provider(
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     return db_provider
+
+
+@router.get("/bookings", response_model=list[Booking])
+async def get_provider_bookings(
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
+    if not db_provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+
+    all_bookings = session.exec(
+        select(Booking).where(Booking.provider_id == db_provider.id)
+    )
+    return all_bookings
 
 
 # Return provider details by ID
