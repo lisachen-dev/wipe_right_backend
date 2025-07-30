@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
 
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from sqlmodel import (
     Column,
     DateTime,
@@ -57,14 +58,20 @@ class Customer(CustomerBase, table=True):
 
 # depends on payload schemas
 class CustomerCreate(CustomerBase):
-    pass
+    first_name: str = Field(..., min_length=1)
+    last_name: str = Field(..., min_length=1)
+    phone_number: Optional[PhoneNumber] = Field(
+        default=None, description="i.e. +1########## or (###) ###-####"
+    )
 
 
 # Schema for update
 class CustomerUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    phone_number: Optional[str] = None
+    phone_number: Optional[PhoneNumber] = Field(
+        default=None, description="i.e. +1########## or (###) ###-####"
+    )
 
 
 # Used to test customer relationships

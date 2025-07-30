@@ -27,6 +27,7 @@ router = APIRouter(
 )
 
 
+# AUTH: Create new provider
 @router.post("/", response_model=Provider)
 async def create_provider(
     payload: ProviderCreate,
@@ -113,6 +114,7 @@ async def get_provider_details(
     )
 
 
+# PUBLIC Get all providers
 @router.get("/all/{category_name}", response_model=list[ProviderPublicRead])
 async def read_providers_category_name(
     category_name: str, session: Session = Depends(get_session)
