@@ -73,6 +73,7 @@ async def read_users_bookings(
     # Get bookings for the specific customer
     bookings = session.exec(
         select(
+            Booking.id,
             Booking.start_time,
             Booking.status,
             Provider.company_name,
@@ -96,6 +97,7 @@ async def read_users_bookings(
                     "provider_first_name": booking_dict["first_name"],
                     "provider_last_name": booking_dict["last_name"],
                     "provider_company_name": booking_dict["company_name"],
+                    "booking_id": booking_dict["id"],
                 }
             )
         elif (
@@ -108,6 +110,7 @@ async def read_users_bookings(
                     "provider_first_name": booking_dict["first_name"],
                     "provider_last_name": booking_dict["last_name"],
                     "provider_company_name": booking_dict["company_name"],
+                    "booking_id": booking_dict["id"],
                 }
             )
 

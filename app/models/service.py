@@ -26,7 +26,9 @@ class ServiceBase(SQLModel):
     pricing: float
     duration: int  # in minutes
     category: Optional[str]
-    services_subcategories: List[str] = Field(default=None, sa_column=Column(ARRAY(String)))
+    services_subcategories: List[str] = Field(
+        default=None, sa_column=Column(ARRAY(String))
+    )
 
 
 class Service(ServiceBase, table=True):

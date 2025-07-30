@@ -83,6 +83,7 @@ class CurrentBookings(SQLModel):
     status: StatusEnum
     start_time: datetime
     service_title: str
+    booking_id: UUID
 
 
 class CustomersBookings(SQLModel):
