@@ -1,23 +1,24 @@
-from typing import Optional, TYPE_CHECKING, List
-from uuid import UUID, uuid4
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Optional
+from uuid import UUID, uuid4
+
 from sqlmodel import (
-    SQLModel,
-    Field,
     Column,
     DateTime,
-    text,
-    UniqueConstraint,
+    Field,
     Relationship,
+    SQLModel,
+    UniqueConstraint,
+    text,
 )
 
-from app.models.service import ServiceResponseProvider
 from app.models.reviews import ReviewRead
+from app.models.service import ServiceResponseProvider
 
 if TYPE_CHECKING:
-    from app.models.service import Service
-    from app.models.reviews import Review
     from app.models.booking import Booking
+    from app.models.reviews import Review
+    from app.models.service import Service
 
 
 class ProviderBase(SQLModel):
@@ -71,8 +72,10 @@ class ProviderUpdate(SQLModel):
 
 class ProviderPublicRead(SQLModel):
     id: UUID
-    phone_number: Optional[str] = None
+    first_name: str
+    last_name: str
     company_name: Optional[str] = None
+    phone_number: Optional[str] = None
     services: list[ServiceResponseProvider]
 
 
@@ -80,11 +83,3 @@ class ProviderResponseDetail(ProviderPublicRead):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
-
-
-class ProviderCategoryResponse(SQLModel):
-    id: UUID
-    company_name: Optional[str] = None
-    first_name: str
-    last_name: str
-    services: list[str]

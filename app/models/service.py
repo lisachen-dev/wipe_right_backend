@@ -1,13 +1,13 @@
-from typing import Optional, TYPE_CHECKING, List
-from uuid import UUID, uuid4
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
-
 from enum import Enum
+from typing import TYPE_CHECKING, List, Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
 if TYPE_CHECKING:
-    from app.models.provider import Provider
     from app.models.booking import Booking
+    from app.models.provider import Provider
 
 
 class ServiceEnum(Enum):

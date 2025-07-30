@@ -1,8 +1,8 @@
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
 if TYPE_CHECKING:
     from app.models.customer import Customer

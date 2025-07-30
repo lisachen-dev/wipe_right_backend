@@ -1,24 +1,24 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, func, select
 
 from app.db.session import get_session
+from app.models.customer import Customer
 from app.models.provider import (
     Provider,
     ProviderCreate,
-    ProviderUpdate,
-    ProviderResponseDetail,
     ProviderPublicRead,
-    ProviderCategoryResponse,
+    ProviderResponseDetail,
+    ProviderUpdate,
 )
 from app.models.reviews import Review, ReviewRead
-from app.models.customer import Customer
+from app.models.service import Service
 from app.utils.auth import get_current_user_id
-from app.utils.crud_helpers import create_one, update_one, delete_one, get_all, get_one
+from app.utils.crud_helpers import create_one, delete_one, get_all, get_one, update_one
 from app.utils.user_helpers import get_user_scoped_record
 from app.utils.validate_categories import validate_category
-from app.models.service import Service
 
 router = APIRouter(
     prefix="/providers",
@@ -113,7 +113,7 @@ async def get_provider_details(
     )
 
 
-@router.get("/all/{category_name}", response_model=list[ProviderCategoryResponse])
+@router.get("/all/{category_name}", response_model=list[ProviderPublicRead])
 async def read_providers_category_name(
     category_name: str, session: Session = Depends(get_session)
 ):
@@ -124,28 +124,14 @@ async def read_providers_category_name(
             raise HTTPException(status_code=400, detail="category name not found")
 
         results = session.exec(
-            select(
-                Provider.id,
-                Provider.company_name,
-                Provider.first_name,
-                Provider.last_name,
-                Service.services_subcategories,
-            )
-            .join(Service)
-            .where(Service.category == category_enum_val)
+            select(Provider)
+            .options(selectinload(Provider.services))
+            .filter(Service.category == category_enum_val)
             .distinct()
-        ).all()
+        )
 
-        return [
-            ProviderCategoryResponse(
-                id=row[0],
-                company_name=row[1],
-                first_name=row[2],
-                last_name=row[3],
-                services=row[4],
-            )
-            for row in results
-        ]
+        return [ProviderPublicRead.model_validate(provider) for provider in results]
+
     except Exception as e:
         print(f"Exception: {e}")
         raise HTTPException(status_code=400, detail=f"Error occurred: {str(e)}")

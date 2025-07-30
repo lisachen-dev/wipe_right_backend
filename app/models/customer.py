@@ -1,23 +1,24 @@
-from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
+
 from sqlmodel import (
-    Field,
     Column,
     DateTime,
-    text,
+    Field,
     Relationship,
-    UniqueConstraint,
     SQLModel,
+    UniqueConstraint,
+    text,
 )
 
 from app.models.address import AddressBase
 from app.models.booking import BookingBase
 
 if TYPE_CHECKING:
-    from app.models.reviews import Review
     from app.models.address import Address
     from app.models.booking import Booking
+    from app.models.reviews import Review
 
 
 class CustomerBase(SQLModel):
