@@ -6,6 +6,7 @@ from sqlmodel import Session
 from app.db.session import get_session
 from app.models.booking import (
     Booking,
+    BookingBase,
     BookingCreate,
     BookingStatusUpdate,
     BookingUpdate,
@@ -58,8 +59,8 @@ async def update_booking(
     )
 
 
-@router.patch("/{booking_id}/status", response_model=Booking)
-async def update_booking(
+@router.patch("/{booking_id}/status", response_model=BookingBase)
+async def update_booking_status(
     booking_id: UUID,
     update_data: BookingStatusUpdate,
     supabase_user_id: UUID = Depends(get_current_user_id),
@@ -78,7 +79,9 @@ async def update_booking(
             status_code=403, detail="Booking does not belong to this Provider"
         )
 
-    return booking
+    return update_one(
+        session, Booking, booking_id, update_data.model_dump(exclude_unset=True)
+    )
 
 
 # DELETE booking
