@@ -65,3 +65,9 @@ class BookingUpdate(SQLModel):
     special_instructions: Optional[str] = None
     service_notes: Optional[str] = None
     start_time: Optional[datetime] = None
+
+
+class BookingDetails(SQLModel):
+    id: UUID
+    start_time: datetime
+    status: StatusEnum
