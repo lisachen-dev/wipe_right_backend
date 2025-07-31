@@ -9,13 +9,7 @@ from app.models.status_update import (
     StatusUpdateCreate,
     StatusUpdateUpdate,
 )
-from app.utils.crud_helpers import (
-    create_one,
-    delete_one,
-    get_all,
-    get_one,
-    update_one,
-)
+from app.utils.crud_helpers import create_one, delete_one, get_all, get_one, update_one
 
 router = APIRouter(
     prefix="/status_updates",
