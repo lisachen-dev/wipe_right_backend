@@ -106,6 +106,7 @@ sqlmodel==0.0.24
     # via sqlmodel
 starlette==0.41.3
     # via fastapi
+stripe==12.4.0
 typer==0.16.0
     # via
     #   fastapi-cli
