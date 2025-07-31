@@ -103,6 +103,8 @@ sniffio==1.3.1
 sqlalchemy==2.0.41
     # via sqlmodel
 sqlmodel==0.0.24
+starlette==0.41.3
+stripe==12.4.0
     # via sqlmodel
 starlette==0.41.3
     # via fastapi

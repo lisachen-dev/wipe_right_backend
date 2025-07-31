@@ -5,19 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.service import (
-    Service,
-    ServiceCreate,
-    ServiceEnum,
-    ServiceUpdate,
-)
-from app.utils.crud_helpers import (
-    create_one,
-    delete_one,
-    get_all,
-    get_one,
-    update_one,
-)
+from app.models.service import Service, ServiceCreate, ServiceEnum, ServiceUpdate
+from app.utils.crud_helpers import create_one, delete_one, get_all, get_one, update_one
 
 router = APIRouter(
     prefix="/services", tags=["services"], responses={404: {"description": "Not found"}}
