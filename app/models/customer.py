@@ -67,6 +67,10 @@ class CustomerUpdate(SQLModel):
     phone_number: Optional[str] = None
 
 
+class CustomerRead(CustomerBase):
+    id: UUID
+
+
 class CurrentBookings(SQLModel):
     provider_first_name: str
     provider_last_name: str

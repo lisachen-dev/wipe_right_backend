@@ -5,6 +5,8 @@ from uuid import UUID, uuid4
 from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
 
 from app.models.enums import StatusEnum
+from app.models.customer import CustomerRead
+from app.models.service import ServiceResponseProvider
 
 if TYPE_CHECKING:
     from app.models.customer import Customer
@@ -56,3 +58,8 @@ class BookingUpdate(SQLModel):
     special_instructions: Optional[str] = None
     service_notes: Optional[str] = None
     start_time: Optional[datetime] = None
+
+
+class BookingReponseProvider(BookingBase):
+    service: ServiceResponseProvider
+    customer: CustomerRead
