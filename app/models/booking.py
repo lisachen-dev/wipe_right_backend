@@ -61,6 +61,10 @@ class BookingUpdate(SQLModel):
     start_time: Optional[datetime] = None
 
 
+class BookingStatusUpdate(SQLModel):
+    status: StatusEnum
+
+
 class BookingReponseProvider(BookingBase):
     service: ServiceResponseProvider
     customer: CustomerRead
