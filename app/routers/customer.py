@@ -9,10 +9,10 @@ from app.models.booking import Booking, StatusEnum
 from app.models.customer import (
     Customer,
     CustomerCreate,
-    CustomerRead,
     CustomersBookings,
     CustomerUpdate,
 )
+from app.models.enums import StatusEnum
 from app.models.provider import Provider
 from app.models.service import Service
 from app.utils.auth import get_current_user_id
@@ -57,7 +57,7 @@ async def read_own_customer(
 
 
 # Used to test customer relationships
-@router.get("/all", response_model=list[CustomerRead])
+@router.get("/all", response_model=list[Customer])
 async def read_all_customers(session: Session = Depends(get_session)):
     return get_all(session, Customer)
 

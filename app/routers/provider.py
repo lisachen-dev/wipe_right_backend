@@ -5,6 +5,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, func, select
 
 from app.db.session import get_session
+from app.models.booking import Booking, BookingReponseProvider
 from app.models.customer import Customer
 from app.models.provider import (
     Provider,
@@ -61,6 +62,23 @@ async def read_own_provider(
     if not db_provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     return db_provider
+
+
+@router.get("/bookings", response_model=list[BookingReponseProvider])
+async def get_provider_bookings(
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
+    if not db_provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+
+    all_bookings = session.exec(
+        select(Booking)
+        .where(Booking.provider_id == db_provider.id)
+        .order_by(Booking.start_time.asc())
+    )
+    return all_bookings
 
 
 # Return provider details by ID

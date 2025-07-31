@@ -13,8 +13,7 @@ from sqlmodel import (
     text,
 )
 
-from app.models.address import AddressBase
-from app.models.booking import Booking, BookingBase, StatusEnum
+from app.models.enums import StatusEnum
 
 if TYPE_CHECKING:
     from app.models.address import Address
@@ -74,10 +73,8 @@ class CustomerUpdate(SQLModel):
     )
 
 
-# Used to test customer relationships
 class CustomerRead(CustomerBase):
-    addresses: list[AddressBase]
-    bookings: list[BookingBase]
+    id: UUID
 
 
 class CurrentBookings(SQLModel):
