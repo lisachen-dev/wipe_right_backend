@@ -56,6 +56,8 @@ markupsafe==3.0.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
+phonenumbers==9.0.10
+    # via PyPi
 pre-commit==4.2.0
 psycopg2-binary==2.9.10
     # via sql-model
@@ -65,6 +67,8 @@ pydantic==2.8.2
     #   fastapi
     #   fastapi-cloud-cli
 pydantic-core==2.20.1
+    # via pydantic
+pydantic-extra-types==2.10.5
     # via pydantic
 pygments==2.19.2
     # via rich

@@ -8,10 +8,6 @@ from pydantic import BaseModel
 
 from app import config
 
-"""
-params: auto_error
-note: auto_error=True (default): FastAPI will reject missing/malformed headers before this runs
-"""
 auth_bearer_token = HTTPBearer()
 
 

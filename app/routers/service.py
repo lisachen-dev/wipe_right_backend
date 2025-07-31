@@ -1,8 +1,8 @@
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-import logging
 
 from app.db.session import get_session
 from app.models.service import (

@@ -1,25 +1,25 @@
-from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
-from app.models.booking import Booking
+
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from sqlmodel import (
-    Field,
     Column,
     DateTime,
-    text,
+    Field,
     Relationship,
-    UniqueConstraint,
     SQLModel,
+    UniqueConstraint,
+    text,
 )
 
-
 from app.models.address import AddressBase
-from app.models.booking import BookingBase, StatusEnum
+from app.models.booking import Booking, BookingBase, StatusEnum
 
 if TYPE_CHECKING:
-    from app.models.reviews import Review
     from app.models.address import Address
     from app.models.booking import Booking
+    from app.models.reviews import Review
 
 
 class CustomerBase(SQLModel):
@@ -35,9 +35,7 @@ class Customer(CustomerBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(
-        nullable=False, index=True, foreign_key="auth.users.id"
-    )
+    supabase_user_id: UUID = Field(nullable=False, index=True)
 
     created_at: Optional[datetime] = Field(
         default=None,
@@ -60,14 +58,20 @@ class Customer(CustomerBase, table=True):
 
 # depends on payload schemas
 class CustomerCreate(CustomerBase):
-    pass
+    first_name: str = Field(..., min_length=1)
+    last_name: str = Field(..., min_length=1)
+    phone_number: Optional[PhoneNumber] = Field(
+        default=None, description="i.e. +1########## or (###) ###-####"
+    )
 
 
 # Schema for update
 class CustomerUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    phone_number: Optional[str] = None
+    phone_number: Optional[PhoneNumber] = Field(
+        default=None, description="i.e. +1########## or (###) ###-####"
+    )
 
 
 # Used to test customer relationships

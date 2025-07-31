@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from enum import Enum
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
-from enum import Enum
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
 
 class StatusEnum(str, Enum):
