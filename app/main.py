@@ -13,6 +13,7 @@ from app.routers import (
     service,
     service_inventory,
     status_update,
+    stripe_route,
     transaction,
     user_profile,
 )
@@ -41,6 +42,7 @@ app.include_router(review.router)
 app.include_router(service.router)
 app.include_router(service_inventory.router)
 app.include_router(status_update.router)
+app.include_router(stripe_route.router)
 app.include_router(transaction.router)
 app.include_router(user_profile.router)
 

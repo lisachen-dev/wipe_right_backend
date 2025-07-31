@@ -11,6 +11,5 @@ def _require(name: str) -> str:
 
 SUPABASE_URL: str = _require("SUPABASE_URL")
 SUPABASE_PUBLISHABLE_KEY: str = _require("SUPABASE_PUBLISHABLE_KEY")
-SUPABASE_SECRET_KEY: Optional[str] = os.getenv(
-    "SUPABASE_SECRET_KEY"
-)  # TODO server-only might be unused atm
+SUPABASE_SECRET_KEY: Optional[str] = os.getenv("SUPABASE_SECRET_KEY")
+STRIPE_SECRET_KEY: Optional[str] = os.getenv("STRIPE_SECRET_KEY")

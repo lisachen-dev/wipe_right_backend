@@ -9,13 +9,7 @@ from app.models.inventory_item import (
     InventoryItems,
     InventoryItemUpdate,
 )
-from app.utils.crud_helpers import (
-    create_one,
-    delete_one,
-    get_all,
-    get_one,
-    update_one,
-)
+from app.utils.crud_helpers import create_one, delete_one, get_all, get_one, update_one
 
 router = APIRouter(
     prefix="/inventory_items",
