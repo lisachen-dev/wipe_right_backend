@@ -1,23 +1,25 @@
-from typing import Optional, TYPE_CHECKING, List
-from uuid import UUID, uuid4
 from datetime import datetime
+from typing import TYPE_CHECKING, List, Optional
+from uuid import UUID, uuid4
+
+from pydantic_extra_types.phone_numbers import PhoneNumber
 from sqlmodel import (
-    SQLModel,
-    Field,
     Column,
     DateTime,
-    text,
-    UniqueConstraint,
+    Field,
     Relationship,
+    SQLModel,
+    UniqueConstraint,
+    text,
 )
 
-from app.models.service import ServiceResponseProvider
 from app.models.reviews import ReviewRead
+from app.models.service import ServiceResponseProvider
 
 if TYPE_CHECKING:
-    from app.models.service import Service
-    from app.models.reviews import Review
     from app.models.booking import Booking
+    from app.models.reviews import Review
+    from app.models.service import Service
 
 
 class ProviderBase(SQLModel):
@@ -34,9 +36,7 @@ class Provider(ProviderBase, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
 
-    supabase_user_id: UUID = Field(
-        nullable=False, index=True, foreign_key="auth.users.id"
-    )
+    supabase_user_id: UUID = Field(nullable=False, index=True)
 
     created_at: Optional[datetime] = Field(
         default=None,
@@ -57,22 +57,31 @@ class Provider(ProviderBase, table=True):
     bookings: List["Booking"] = Relationship(back_populates="provider")
 
 
-# depends on payload schemas
-class ProviderCreate(ProviderBase):
-    pass
+class ProviderCreate(SQLModel):
+    first_name: str = Field(..., min_length=1)
+    last_name: str = Field(..., min_length=1)
+    company_name: Optional[str] = None
+    phone_number: Optional[PhoneNumber] = Field(
+        default=None, description="i.e. +1########## or (###) ###-####"
+    )
 
 
 # Schema for update
 class ProviderUpdate(SQLModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    phone_number: Optional[str] = None
+    company_name: Optional[str] = None
+    phone_number: Optional[PhoneNumber] = Field(
+        default=None, description="i.e. +1########## or (###) ###-####"
+    )
 
 
 class ProviderPublicRead(SQLModel):
     id: UUID
-    phone_number: Optional[str] = None
+    first_name: str
+    last_name: str
     company_name: Optional[str] = None
+    phone_number: Optional[str] = None
     services: list[ServiceResponseProvider]
 
 
@@ -80,11 +89,3 @@ class ProviderResponseDetail(ProviderPublicRead):
     reviews: list[ReviewRead]
     review_count: int
     average_rating: Optional[float] = None
-
-
-class ProviderCategoryResponse(SQLModel):
-    id: UUID
-    company_name: Optional[str] = None
-    first_name: str
-    last_name: str
-    services: list[str]

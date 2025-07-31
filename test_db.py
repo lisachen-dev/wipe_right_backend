@@ -1,8 +1,9 @@
+from uuid import UUID
+
 from sqlmodel import Session, select
 
 from app.db.engine import engine
 from app.models import Provider, Service
-from uuid import UUID
 
 
 def seed_provider():
