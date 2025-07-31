@@ -73,7 +73,9 @@ async def get_provider_bookings(
         raise HTTPException(status_code=404, detail="Provider not found")
 
     all_bookings = session.exec(
-        select(Booking).where(Booking.provider_id == db_provider.id)
+        select(Booking)
+        .where(Booking.provider_id == db_provider.id)
+        .order_by(Booking.start_time.asc())
     )
     return all_bookings
 

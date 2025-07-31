@@ -3,17 +3,8 @@ from typing import Optional, TYPE_CHECKING
 from uuid import UUID, uuid4
 
 from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
-from enum import Enum
 
-
-class StatusEnum(str, Enum):
-    confirmed = "confirmed"
-    en_route = "en_route"
-    in_progress = "in_progress"
-    completed = "completed"
-    cancelled = "cancelled"
-    review_needed = "review_needed"
-
+from app.models.enums import StatusEnum
 
 if TYPE_CHECKING:
     from app.models.customer import Customer

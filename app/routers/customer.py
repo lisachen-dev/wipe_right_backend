@@ -14,7 +14,8 @@ from app.models.customer import (
 from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import create_one, delete_one, update_one, get_all
 from app.utils.user_helpers import get_user_scoped_record
-from app.models.booking import Booking, StatusEnum
+from app.models.booking import Booking
+from app.models.enums import StatusEnum
 from app.models.provider import Provider
 from app.models.service import Service
 

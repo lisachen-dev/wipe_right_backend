@@ -1,7 +1,6 @@
 from typing import Optional, TYPE_CHECKING, List
 from datetime import datetime
 from uuid import UUID, uuid4
-from app.models.booking import Booking
 from sqlmodel import (
     Field,
     Column,
@@ -12,7 +11,7 @@ from sqlmodel import (
     SQLModel,
 )
 
-from app.models.booking import StatusEnum
+from app.models.enums import StatusEnum
 
 if TYPE_CHECKING:
     from app.models.reviews import Review
