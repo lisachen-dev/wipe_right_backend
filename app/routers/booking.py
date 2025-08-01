@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from app.db.session import get_session
-from app.models.address import Address
 from app.models.booking import Booking, BookingCreate, BookingUpdate
 from app.models.customer import Customer
 from app.models.provider import Provider
@@ -99,13 +98,13 @@ async def create_booking(
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    ### ------- Associate Address ID -------
-    db_address = get_one(session, Address, booking.address_id)
-
-    if db_address.customer_id != db_customer.id:
-        raise HTTPException(
-            status_code=403, detail="Address does not belong to this customer"
-        )
+    # ### ------- Associate Address ID -------
+    # db_address = get_one(session, Address, booking.address_id)
+    #
+    # if db_address.customer_id != db_customer.id:
+    #     raise HTTPException(
+    #         status_code=403, detail="Address does not belong to this customer"
+    #     )
 
     ### ------- Create Booking Data -------
     booking_data = booking.model_dump()
