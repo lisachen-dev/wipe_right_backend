@@ -1,41 +1,117 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+import stripe
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from app.db.session import get_session
+from app.models.address import Address
 from app.models.booking import Booking, BookingCreate, BookingUpdate
+from app.models.customer import Customer
+from app.models.provider import Provider
+from app.utils.auth import get_current_user_id
 from app.utils.crud_helpers import (
     create_one,
     delete_one,
-    get_all,
+    get_all_by_field,
     get_one,
     update_one,
 )
+from app.utils.user_helpers import get_user_scoped_record
 
 router = APIRouter(
-    prefix="/bookings", tags=["bookings"], responses={404: {"description": "Not found"}}
+    prefix="/bookings",
+    tags=["bookings"],
+    responses={404: {"description": "Not found"}},
 )
 
 
-# GET all bookings
-@router.get("/", response_model=list[Booking])
-async def read_bookings(session: Session = Depends(get_session)):
-    return get_all(session, Booking)
+# [AUTH: CUSTOMER VIEW] GET ALL BOOKINGS
+# TODO NEED TO CREATE SEPARATE CLASS FOR CUSTOMER VS PROVIDER
+@router.get("/me", response_model=list[Booking])
+async def read_bookings_by_customer(
+    session: Session = Depends(get_session),
+    supabase_user_id: UUID = Depends(get_current_user_id),
+):
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
+
+    if not db_customer:
+        raise HTTPException(status_code=404, details="Customer not found")
+
+    return get_all_by_field(session, Booking, "customer_id", db_customer.id)
 
 
-# GET one booking
+# [AUTH: PROVIDER VIEW] GET ALL BOOKINGS
+# TODO NEED TO CREATE SEPARATE CLASS FOR CUSTOMER VS PROVIDER
+@router.get("/provider/me", response_model=list[Booking])
+async def read_bookings_by_provider(
+    session: Session = Depends(get_session),
+    supabase_user_id: UUID = Depends(get_current_user_id),
+):
+    db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
+
+    if not db_provider:
+        raise HTTPException(status_code=404, details="Provider not found")
+
+    return get_all_by_field(session, Booking, "provider_id", db_provider.id)
+
+
+# [AUTH: CUSTOMER VIEW}GET ONE BOOKING
 @router.get("/{booking_id}", response_model=Booking)
 async def read_booking(booking_id: UUID, session: Session = Depends(get_session)):
     return get_one(session, Booking, booking_id)
 
 
-# CREATE booking
+# [AUTH: CUSTOMER VIEW] CREATE BOOKING
 @router.post("/", response_model=Booking)
 async def create_booking(
-    booking: BookingCreate, session: Session = Depends(get_session)
+    booking: BookingCreate,
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
 ):
-    return create_one(session, Booking, booking.dict())
+    ### ------- Validate Stripe Payment Intent ID -------
+    stripe_payment_id = booking.stripe_payment_id
+
+    # verify request came through
+    if not stripe_payment_id:
+        raise HTTPException(status_code=400, detail="Missing payment intent ID")
+
+    # validate existence on network
+    try:
+        payment_intent = stripe.PaymentIntent.retrieve(stripe_payment_id)
+        print(f"=========PAYMENT_INTENT==============: {payment_intent.id}")
+    except stripe.error.InvalidRequestError:
+        raise HTTPException(status_code=400, detail="Invalid payment intent id")
+    except stripe.error.StripeError:
+        raise HTTPException(status_code=502, detail="Stripe service error")
+
+    # confirm payment status success
+    # https://docs.stripe.com/api/payment_intents/object#payment_intent_object-status
+    if payment_intent.status != "succeeded":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Payment not confirmed. Status: {payment_intent.status}",
+        )
+
+    ### ------- Validate Authenticated Customer -------
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
+
+    if not db_customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    ### ------- Associate Address ID -------
+    db_address = get_one(session, Address, booking.address_id)
+
+    if db_address.customer_id != db_customer.id:
+        raise HTTPException(
+            status_code=403, detail="Address does not belong to this customer"
+        )
+
+    ### ------- Create Booking Data -------
+    booking_data = booking.model_dump()
+    booking_data["customer_id"] = db_customer.id
+
+    return create_one(session, Booking, booking_data)
 
 
 # UPDATE booking
