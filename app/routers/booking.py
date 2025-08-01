@@ -61,7 +61,7 @@ async def read_bookings_details(
             )
             .join(Customer, Customer.id == Booking.customer_id)
             .join(Provider, Provider.id == Booking.provider_id)
-            .join(Address, Address.customer_id == Booking.customer_id)
+            .join(Address, Address.id == Booking.address_id)
             .where(Booking.id == booking_id)
         ).first()
         if not found_booking:
@@ -87,6 +87,7 @@ async def read_bookings_details(
         )
 
     except Exception:
+        print("found id", found_booking)
         raise HTTPException(status_code=500, detail="Internal server error")
 
 

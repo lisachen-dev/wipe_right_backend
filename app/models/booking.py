@@ -30,6 +30,7 @@ class Booking(BookingBase, table=True):
     customer_id: UUID = Field(foreign_key="customers.id")
     provider_id: UUID = Field(foreign_key="providers.id")
     service_id: UUID = Field(foreign_key="services.id")
+    address_id: UUID = Field(foreign_key="address.id")
 
     created_at: Optional[datetime] = Field(
         default=None,
