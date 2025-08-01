@@ -4,7 +4,16 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.booking import Booking, BookingCreate, BookingDetails, BookingUpdate
+from app.models.address import Address
+from app.models.booking import (
+    Booking,
+    BookingCreate,
+    BookingDetails,
+    BookingUpdate,
+    CustomerAddressResponse,
+)
+from app.models.customer import Customer
+from app.models.provider import Provider
 from app.utils.crud_helpers import (
     create_one,
     delete_one,
@@ -35,27 +44,48 @@ async def read_booking(booking_id: UUID, session: Session = Depends(get_session)
 async def read_bookings_details(
     booking_id: UUID, session: Session = Depends(get_session)
 ):
-    # selects the details from the booking
-    # now i need the details of customers address
-    # next is providers detials company name and phone number
-    found_booking = session.exec(
-        select(Booking.id, Booking.start_time, Booking.status).where(
-            Booking.id == booking_id
-        )
-    ).first()
     try:
+        found_booking = session.exec(
+            select(
+                Booking.id,
+                Booking.start_time,
+                Booking.status,
+                Customer.phone_number.label("customer_phone_number"),
+                Provider.company_name,
+                Provider.phone_number.label("provider_phone_number"),
+                Address.street_address_1,
+                Address.street_address_2,
+                Address.city,
+                Address.state,
+                Address.zip,
+            )
+            .join(Customer, Customer.id == Booking.customer_id)
+            .join(Provider, Provider.id == Booking.provider_id)
+            .join(Address, Address.customer_id == Booking.customer_id)
+            .where(Booking.id == booking_id)
+        ).first()
         if not found_booking:
             raise HTTPException(
                 status_code=400,
                 detail="invalid booking id sent try again",
             )
 
-        print("found booking", found_booking)
         return BookingDetails(
             id=found_booking.id,
             start_time=found_booking.start_time,
             status=found_booking.status,
+            provider_company_name=found_booking.company_name,
+            provider_phone_number=found_booking.provider_phone_number,
+            customer_phone_number=found_booking.customer_phone_number,
+            customer_address=CustomerAddressResponse(
+                street_address_1=found_booking.street_address_1,
+                street_address_2=found_booking.street_address_2,
+                city=found_booking.city,
+                state=found_booking.state,
+                zip=found_booking.zip,
+            ),
         )
+
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
 
