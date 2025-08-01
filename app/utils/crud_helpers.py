@@ -1,7 +1,17 @@
 import uuid
+from typing import Any, List, Type
 
 from fastapi import HTTPException
-from sqlmodel import Session, select
+from sqlmodel import Session, SQLModel, select
+
+
+# GET ALL BY FIELD
+def get_all_by_field(
+    session: Session, model: Type[SQLModel], field_name: str, value: Any
+) -> List[SQLModel]:
+    field = getattr(model, field_name)
+    statement = select(model).where(field == value)
+    return session.exec(statement).all()
 
 
 # GET ALL

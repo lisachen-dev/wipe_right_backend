@@ -1,10 +1,11 @@
 from datetime import datetime
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, List, Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
 if TYPE_CHECKING:
+    from app.models.booking import Booking
     from app.models.customer import Customer
 
 
@@ -21,6 +22,8 @@ class Address(AddressBase, table=True):
 
     id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True)
     customer_id: UUID = Field(foreign_key="customers.id")
+    customer: "Customer" = Relationship(back_populates="addresses")
+    bookings: List["Booking"] = Relationship(back_populates="address")
 
     created_at: Optional[datetime] = Field(
         default=None,
@@ -34,8 +37,6 @@ class Address(AddressBase, table=True):
             DateTime(timezone=True), server_default=text("(now() AT TIME ZONE 'utc')")
         ),
     )
-
-    customer: "Customer" = Relationship(back_populates="addresses")
 
 
 class AddressCreate(AddressBase):

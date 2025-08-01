@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.booking import Booking, StatusEnum
+from app.models.booking import Booking
 from app.models.customer import (
     Customer,
     CustomerCreate,

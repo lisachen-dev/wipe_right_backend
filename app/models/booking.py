@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -50,15 +49,17 @@ class Booking(BookingBase, table=True):
 
 
 class BookingCreate(BookingBase):
-    customer_id: UUID
     provider_id: UUID
     service_id: UUID
+    address_id: UUID
+    stripe_payment_id: Optional[str] = Field(default=None)
 
 
 class BookingUpdate(SQLModel):
     special_instructions: Optional[str] = None
     service_notes: Optional[str] = None
     start_time: Optional[datetime] = None
+    stripe_payment_id: Optional[str] = None
 
 
 class BookingReponseProvider(BookingBase):
