@@ -85,6 +85,7 @@ class CurrentBookings(SQLModel):
     start_time: datetime
     service_title: str
     booking_id: UUID
+    provider_id: UUID
 
 
 class CustomersBookings(SQLModel):
