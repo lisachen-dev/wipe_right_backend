@@ -1,19 +1,13 @@
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from enum import Enum
+from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Column, DateTime, Field, SQLModel, text, Relationship
-from enum import Enum
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
-
-class StatusEnum(str, Enum):
-    confirmed = "confirmed"
-    en_route = "en_route"
-    in_progress = "in_progress"
-    completed = "completed"
-    cancelled = "cancelled"
-    review_needed = "review_needed"
-
+from app.models.customer import CustomerRead
+from app.models.enums import StatusEnum
+from app.models.service import ServiceResponseProvider
 
 if TYPE_CHECKING:
     from app.models.customer import Customer
@@ -71,3 +65,8 @@ class BookingDetails(SQLModel):
     id: UUID
     start_time: datetime
     status: StatusEnum
+
+
+class BookingReponseProvider(BookingBase):
+    service: ServiceResponseProvider
+    customer: CustomerRead

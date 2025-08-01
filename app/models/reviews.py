@@ -1,11 +1,12 @@
-from typing import Optional, TYPE_CHECKING
-from uuid import uuid4, UUID
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Column, DateTime, text, Relationship
+from typing import TYPE_CHECKING, Optional
+from uuid import UUID, uuid4
+
+from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
 if TYPE_CHECKING:
-    from app.models.provider import Provider
     from app.models.customer import Customer
+    from app.models.provider import Provider
 
 
 class ReviewBase(SQLModel):

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.booking import Booking, BookingCreate, BookingUpdate, BookingDetails
+from app.models.booking import Booking, BookingCreate, BookingDetails, BookingUpdate
 from app.utils.crud_helpers import (
     create_one,
     delete_one,
