@@ -124,8 +124,8 @@ async def get_provider_details(
 
     return ProviderResponseDetail(
         id=provider.id,
-        first_name=provider.first_name,  
-        last_name=provider.last_name,    
+        first_name=provider.first_name,
+        last_name=provider.last_name,
         company_name=provider.company_name,
         phone_number=provider.phone_number,
         services=provider.services,
