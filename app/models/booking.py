@@ -9,6 +9,7 @@ from app.models.enums import StatusEnum
 from app.models.service import ServiceResponseProvider
 
 if TYPE_CHECKING:
+    from app.models.address import Address
     from app.models.customer import Customer
     from app.models.provider import Provider
     from app.models.service import Service
@@ -29,6 +30,7 @@ class Booking(BookingBase, table=True):
     customer_id: UUID = Field(foreign_key="customers.id")
     provider_id: UUID = Field(foreign_key="providers.id")
     service_id: UUID = Field(foreign_key="services.id")
+    address_id: UUID = Field(foreign_key="addresses.id")
 
     created_at: Optional[datetime] = Field(
         default=None,
@@ -46,6 +48,7 @@ class Booking(BookingBase, table=True):
     customer: "Customer" = Relationship(back_populates="bookings")
     provider: "Provider" = Relationship(back_populates="bookings")
     service: "Service" = Relationship(back_populates="bookings")
+    address: "Address" = Relationship(back_populates="bookings")
 
 
 class BookingCreate(BookingBase):
