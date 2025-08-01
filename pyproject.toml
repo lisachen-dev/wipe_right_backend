@@ -63,9 +63,6 @@ extend-select = ["E722", "I"]
 fixable = ["ALL"]
 unfixable = []
 
-[tool.ruff.lint.isort]
-combine-as-imports = true
-
 [tool.ruff.format]
 docstring-code-format = true
 quote-style = "double"
