@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID, uuid4
 
@@ -10,6 +9,7 @@ from app.models.enums import StatusEnum
 from app.models.service import ServiceResponseProvider
 
 if TYPE_CHECKING:
+    from app.models.address import Address
     from app.models.customer import Customer
     from app.models.provider import Provider
     from app.models.service import Service
@@ -30,7 +30,7 @@ class Booking(BookingBase, table=True):
     customer_id: UUID = Field(foreign_key="customers.id")
     provider_id: UUID = Field(foreign_key="providers.id")
     service_id: UUID = Field(foreign_key="services.id")
-    address_id: UUID = Field(foreign_key="address.id")
+    address_id: UUID = Field(foreign_key="addresses.id")
 
     created_at: Optional[datetime] = Field(
         default=None,
@@ -48,18 +48,21 @@ class Booking(BookingBase, table=True):
     customer: "Customer" = Relationship(back_populates="bookings")
     provider: "Provider" = Relationship(back_populates="bookings")
     service: "Service" = Relationship(back_populates="bookings")
+    address: "Address" = Relationship(back_populates="bookings")
 
 
 class BookingCreate(BookingBase):
-    customer_id: UUID
     provider_id: UUID
     service_id: UUID
+    address_id: UUID
+    stripe_payment_id: Optional[str] = Field(default=None)
 
 
 class BookingUpdate(SQLModel):
     special_instructions: Optional[str] = None
     service_notes: Optional[str] = None
     start_time: Optional[datetime] = None
+    stripe_payment_id: Optional[str] = None
 
 
 class CustomerAddressResponse(SQLModel):
