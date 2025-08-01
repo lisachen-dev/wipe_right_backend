@@ -74,8 +74,6 @@ async def read_bookings_details(
     booking_id: UUID, session: Session = Depends(get_session)
 ):
     try:
-        # Use raw SQL to avoid relationship issues
-
         result = session.exec(
             select(
                 Booking.id,
@@ -95,29 +93,6 @@ async def read_bookings_details(
             .join(Address, Address.id == Booking.address_id)
             .where(Booking.id == booking_id)
         ).first()
-        # query = text(
-        #     """
-        # SELECT
-        #     b.id,
-        #     b.start_time,
-        #     b.status,
-        #     c.phone_number as customer_phone_number,
-        #     p.company_name,
-        #     p.phone_number as provider_phone_number,
-        #     a.street_address_1,
-        #     a.street_address_2,
-        #     a.city,
-        #     a.state,
-        #     a.zip
-        # FROM bookings b
-        # JOIN customers c ON c.id = b.customer_id
-        # JOIN providers p ON p.id = b.provider_id
-        # JOIN addresses a ON a.id = b.address_id
-        # WHERE b.id = :booking_id
-        # """
-        # )
-
-        # result = session.execute(query, {"booking_id": str(booking_id)}).first()
 
         if not result:
             raise HTTPException(
@@ -187,13 +162,13 @@ async def create_booking(
     if not db_customer:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    ### ------- Associate Address ID -------
-    db_address = get_one(session, Address, booking.address_id)
-
-    if db_address.customer_id != db_customer.id:
-        raise HTTPException(
-            status_code=403, detail="Address does not belong to this customer"
-        )
+    # ### ------- Associate Address ID -------
+    # db_address = get_one(session, Address, booking.address_id)
+    #
+    # if db_address.customer_id != db_customer.id:
+    #     raise HTTPException(
+    #         status_code=403, detail="Address does not belong to this customer"
+    #     )
 
     ### ------- Create Booking Data -------
     booking_data = booking.model_dump()
