@@ -2,10 +2,17 @@ from uuid import UUID
 
 import stripe
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select, text
 
 from app.db.session import get_session
-from app.models.booking import Booking, BookingCreate, BookingUpdate
+from app.models.address import Address
+from app.models.booking import (
+    Booking,
+    BookingCreate,
+    BookingDetails,
+    BookingUpdate,
+    CustomerAddressResponse,
+)
 from app.models.customer import Customer
 from app.models.provider import Provider
 from app.utils.auth import get_current_user_id
@@ -61,6 +68,63 @@ async def read_booking(booking_id: UUID, session: Session = Depends(get_session)
     return get_one(session, Booking, booking_id)
 
 
+# GET one booking and its details
+@router.get("/{booking_id}/details", response_model=BookingDetails)
+async def read_bookings_details(
+    booking_id: UUID, session: Session = Depends(get_session)
+):
+    try:
+        result = session.exec(
+            select(
+                Booking.id,
+                Booking.start_time,
+                Booking.status,
+                Customer.phone_number.label("customer_phone_number"),
+                Provider.company_name,
+                Provider.phone_number.label("provider_phone_number"),
+                Address.street_address_1,
+                Address.street_address_2,
+                Address.city,
+                Address.state,
+                Address.zip,
+            )
+            .join(Customer, Customer.id == Booking.customer_id)
+            .join(Provider, Provider.id == Booking.provider_id)
+            .join(Address, Address.id == Booking.address_id)
+            .where(Booking.id == booking_id)
+        ).first()
+
+        if not result:
+            raise HTTPException(
+                status_code=404,
+                detail="Booking not found",
+            )
+
+        return BookingDetails(
+            id=result.id,
+            start_time=result.start_time,
+            status=result.status,
+            provider_company_name=result.company_name,
+            provider_phone_number=result.provider_phone_number,
+            customer_phone_number=result.customer_phone_number,
+            customer_address=CustomerAddressResponse(
+                street_address_1=result.street_address_1,
+                street_address_2=result.street_address_2,
+                city=result.city,
+                state=result.state,
+                zip=result.zip,
+            ),
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error in read_bookings_details: {e}")
+        print(f"Booking ID: {booking_id}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+# CREATE booking
 # [AUTH: CUSTOMER VIEW] CREATE BOOKING
 @router.post("/", response_model=Booking)
 async def create_booking(

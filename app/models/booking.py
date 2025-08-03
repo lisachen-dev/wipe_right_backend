@@ -65,6 +65,24 @@ class BookingUpdate(SQLModel):
     stripe_payment_id: Optional[str] = None
 
 
+class CustomerAddressResponse(SQLModel):
+    street_address_1: Optional[str] = None
+    street_address_2: Optional[str] = None
+    city: str
+    state: str
+    zip: str
+
+
+class BookingDetails(SQLModel):
+    id: UUID
+    start_time: datetime
+    status: StatusEnum
+    provider_company_name: Optional[str] = None
+    provider_phone_number: Optional[str] = None
+    customer_phone_number: Optional[str] = None
+    customer_address: CustomerAddressResponse
+
+
 class BookingReponseProvider(BookingBase):
     service: ServiceResponseProvider
     customer: CustomerRead
