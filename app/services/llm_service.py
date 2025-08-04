@@ -1,8 +1,11 @@
 import logging
 import os
-from typing import Optional
+from typing import List, Optional
 
 import openai
+
+from app.models import Service
+from app.models.chat import ConversationMessage
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +42,22 @@ class LLMService:
         except Exception as e:
             logger.error(f"LLM API error: {e}")
             raise
+
+    @staticmethod
+    def format_services_for_llm(services: List[Service]) -> str:
+        service_string_for_llm = ""
+
+        if not services:
+            raise ValueError("No services are available to format for LLM.")
+
+        for service in services:
+            for key, val in service.model_dump().items():
+                service_string_for_llm += f"{key}: {val}\n"
+            service_string_for_llm += "---\n"
+
+        return service_string_for_llm
+
+    def build_conversation_context(
+        self, history: List[ConversationMessage], current_message: str
+    ):
+        pass
