@@ -49,3 +49,7 @@ class AddressUpdate(SQLModel):
     city: Optional[str] = None
     state: Optional[str] = None
     zip: Optional[str] = None
+
+
+class AddressRead(AddressBase):
+    id: UUID
