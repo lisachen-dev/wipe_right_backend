@@ -24,6 +24,7 @@ dependencies = [
     "markdown-it-py==3.0.0",
     "markupsafe==3.0.2",
     "mdurl==0.1.2",
+    "openai>=1.98.0",
     "phonenumbers==9.0.10",
     "pre-commit==4.2.0",
     "psycopg2-binary==2.9.10",

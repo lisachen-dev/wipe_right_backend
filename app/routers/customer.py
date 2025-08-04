@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.booking import Booking, StatusEnum
+from app.models.booking import Booking
 from app.models.customer import (
     Customer,
     CustomerCreate,
@@ -73,13 +73,14 @@ async def read_users_bookings(
     # Get bookings for the specific customer
     bookings = session.exec(
         select(
-            Booking.id,
+            Booking.id.label("booking_id"),
             Booking.start_time,
             Booking.status,
             Provider.company_name,
             Provider.first_name,
             Provider.last_name,
             Service.service_title,
+            Provider.id.label("provider_id"),
         )
         .join(Provider, Provider.id == Booking.provider_id)
         .join(Service, Service.id == Booking.service_id)
@@ -97,7 +98,8 @@ async def read_users_bookings(
                     "provider_first_name": booking_dict["first_name"],
                     "provider_last_name": booking_dict["last_name"],
                     "provider_company_name": booking_dict["company_name"],
-                    "booking_id": booking_dict["id"],
+                    "booking_id": booking_dict["booking_id"],
+                    "provider_id": booking_dict["provider_id"],
                 }
             )
         elif (
@@ -110,7 +112,8 @@ async def read_users_bookings(
                     "provider_first_name": booking_dict["first_name"],
                     "provider_last_name": booking_dict["last_name"],
                     "provider_company_name": booking_dict["company_name"],
-                    "booking_id": booking_dict["id"],
+                    "booking_id": booking_dict["booking_id"],
+                    "provider_id": booking_dict["provider_id"],
                 }
             )
 
