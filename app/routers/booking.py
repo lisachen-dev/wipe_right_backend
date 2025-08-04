@@ -8,8 +8,10 @@ from app.db.session import get_session
 from app.models.address import Address
 from app.models.booking import (
     Booking,
+    BookingBase,
     BookingCreate,
     BookingDetails,
+    BookingStatusUpdate,
     BookingUpdate,
     CustomerAddressResponse,
 )
@@ -186,6 +188,31 @@ async def update_booking(
 ):
     return update_one(
         session, Booking, booking_id, update_data.dict(exclude_unset=True)
+    )
+
+
+@router.patch("/{booking_id}/status", response_model=BookingBase)
+async def update_booking_status(
+    booking_id: UUID,
+    update_data: BookingStatusUpdate,
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    db_provider = get_user_scoped_record(session, Provider, supabase_user_id)
+    if not db_provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+
+    booking = get_one(session, Booking, booking_id)
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    if booking.provider_id != db_provider.id:
+        raise HTTPException(
+            status_code=403, detail="Booking does not belong to this Provider"
+        )
+
+    return update_one(
+        session, Booking, booking_id, update_data.model_dump(exclude_unset=True)
     )
 
 

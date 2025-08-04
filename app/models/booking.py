@@ -83,6 +83,10 @@ class BookingDetails(SQLModel):
     customer_address: CustomerAddressResponse
 
 
+class BookingStatusUpdate(SQLModel):
+    status: StatusEnum
+
+
 class BookingReponseProvider(BookingBase):
     service: ServiceResponseProvider
     customer: CustomerRead
