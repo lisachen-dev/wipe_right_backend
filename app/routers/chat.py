@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends
