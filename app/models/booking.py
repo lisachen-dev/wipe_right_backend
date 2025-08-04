@@ -4,6 +4,7 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Column, DateTime, Field, Relationship, SQLModel, text
 
+from app.models.address import AddressRead
 from app.models.customer import CustomerRead
 from app.models.enums import StatusEnum
 from app.models.service import ServiceResponseProvider
@@ -88,5 +89,7 @@ class BookingStatusUpdate(SQLModel):
 
 
 class BookingReponseProvider(BookingBase):
+    id: UUID
     service: ServiceResponseProvider
     customer: CustomerRead
+    address: AddressRead

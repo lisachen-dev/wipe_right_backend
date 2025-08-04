@@ -76,6 +76,11 @@ async def get_provider_bookings(
     all_bookings = session.exec(
         select(Booking)
         .where(Booking.provider_id == db_provider.id)
+        .options(
+            selectinload(Booking.customer),
+            selectinload(Booking.service),
+            selectinload(Booking.address),
+        )
         .order_by(Booking.start_time.asc())
     )
     return all_bookings
