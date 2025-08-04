@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 from app.routers import (
     address,
     booking,
+    chat,
     customer,
     inventory_item,
     provider,
@@ -34,6 +35,7 @@ app.add_middleware(
 # Router Registrations
 app.include_router(address.router)
 app.include_router(booking.router)
+app.include_router(chat.router)
 app.include_router(customer.router)
 app.include_router(inventory_item.router)
 app.include_router(provider.router)
