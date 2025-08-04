@@ -63,7 +63,7 @@ async def read_service_category(
 async def create_service(
     service: ServiceCreate, session: Session = Depends(get_session)
 ):
-    return create_one(session, Service, service.dict())
+    return create_one(session, Service, service.model_dump())
 
 
 # UPDATE a service
@@ -74,7 +74,7 @@ async def update_service(
     session: Session = Depends(get_session),
 ):
     return update_one(
-        session, Service, service_id, update_data.dict(exclude_unset=True)
+        session, Service, service_id, update_data.model_dump(exclude_unset=True)
     )
 
 
