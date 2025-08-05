@@ -5,7 +5,7 @@ from typing import List, Optional
 import openai
 
 from app.models import Service
-from app.models.chat import ConversationMessage
+from app.models.chat import ChatRequest
 
 logger = logging.getLogger(__name__)
 
@@ -59,14 +59,13 @@ class LLMService:
         return f"{heading}\n{service_string_for_llm}"
 
     @staticmethod
-    def build_conversation_context(history: List[ConversationMessage], current: str):
+    def build_conversation_context(chat_request: ChatRequest) -> str:
         context = []
-        for message in history:
+        for message in chat_request.conversation_history:
             context.append(f'User: "{message.user}"\nBumi: "{message.bumi}"')
 
         history_context = "\n".join(context)
-
-        current_context = f'User: "{current}"'
+        current_context = f'User: "{chat_request.message}"'
 
         result_context = f"CONVERSATION HISTORY:\n{history_context}\n\nCURRENT REQUEST: {current_context}"
 
