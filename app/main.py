@@ -6,6 +6,7 @@ from app.routers import (
     address,
     booking,
     chat,
+    coupon,
     customer,
     inventory_item,
     provider,
@@ -47,6 +48,7 @@ app.include_router(status_update.router)
 app.include_router(stripe_route.router)
 app.include_router(transaction.router)
 app.include_router(user_profile.router)
+app.include_router(coupon.router)
 
 
 # Root Route redirects to Swagger docs

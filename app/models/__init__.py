@@ -1,5 +1,6 @@
 from .address import Address
 from .booking import Booking
+from .coupon import Coupon
 from .customer import Customer
 from .inventory_item import InventoryItems
 from .provider import Provider
@@ -22,4 +23,5 @@ __all__ = [
     "ServiceInventory",
     "StatusUpdate",
     "Transaction",
+    "Coupon",
 ]
