@@ -54,10 +54,20 @@ class LLMService:
             for key, val in service.model_dump().items():
                 service_string_for_llm += f"{key}: {val}\n"
             service_string_for_llm += "---\n"
+        heading = "AVAILABLE SERVICES:"
 
-        return service_string_for_llm
+        return f"{heading}\n{service_string_for_llm}"
 
-    def build_conversation_context(
-        self, history: List[ConversationMessage], current_message: str
-    ):
-        pass
+    @staticmethod
+    def build_conversation_context(history: List[ConversationMessage], current: str):
+        context = []
+        for message in history:
+            context.append(f'User: "{message.user}"\nBumi: "{message.bumi}"')
+
+        history_context = "\n".join(context)
+
+        current_context = f'User: "{current}"'
+
+        result_context = f"CONVERSATION HISTORY:\n{history_context}\n\nCURRENT REQUEST: {current_context}"
+
+        return result_context
