@@ -1,6 +1,12 @@
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
+
+
+class ActionType(str, Enum):
+    RECOMMEND = "recommend"
+    CLARIFY = "clarify"
 
 
 class ConversationMessage(BaseModel):
@@ -27,10 +33,10 @@ class ServiceRecommendation(BaseModel):
 
 
 class ChatResponse(BaseModel):
-    action: str = Field(..., description="Either 'recommend' or 'clarify'")
-    ai_message: str = Field(..., description="Bumi's response message")
+    action: ActionType = Field(..., description="Either 'recommend' or 'clarify'")
+    ai_message: str = Field(..., description="Here are some services that may help.")
     services: Optional[List[ServiceRecommendation]] = Field(
-        default=None, description="Recommended services (only if action is 'recommend')"
+        default=None, description="..."
     )
     clarification_question: Optional[str] = Field(
         default=None, description="Clarification question (only if action is 'clarify')"

@@ -1,12 +1,16 @@
+import json
 import logging
 
-from fastapi import APIRouter, Depends
-from requests.sessions import Session
+from fastapi import APIRouter, Depends, HTTPException
+from sqlmodel import Session
 
 from app.db.session import get_session
+from app.models import Service
 from app.models.chat import ChatRequest, ChatResponse
-from app.services.db_service import get_all_services
+from app.services.db_access import get_all_services
 from app.services.llm_service import LLMService
+from app.services.transformers import map_services_to_recommendations
+from app.utils.crud_helpers import get_all_by_ids_with_options
 
 router = APIRouter(
     prefix="/bumi/booking",
@@ -32,9 +36,28 @@ async def chat_with_bumi(
     # send the prompt to the LLM
     ai_response = llm_service.call_llm(prompt)
 
+    try:
+        # convert json to python object
+        parsed_ai_response = json.loads(ai_response)
+
+    except Exception as e:
+        logger.exception("Unexpected error parsing LLM response")
+        raise HTTPException(status_code=500, detail=f"AI response error: {str(e)}")
+
+    # parse selected services
+    service_ids = parsed_ai_response.get("service_ids", [])
+    services = get_all_by_ids_with_options(
+        session=session,
+        model=Service,
+        ids=service_ids,
+        relationship_attr=Service.provider,
+    )
+
+    recommended_services = map_services_to_recommendations(services, session)
+
     return ChatResponse(
-        action="recommend",
-        ai_message=ai_response,
-        services=[],  # parse?
-        clarification_question=None,
+        action=parsed_ai_response.get("action", "recommend"),
+        ai_message=parsed_ai_response.get("message", "No message provided"),
+        services=recommended_services,
+        clarification_question=parsed_ai_response.get("clarification_question"),
     )

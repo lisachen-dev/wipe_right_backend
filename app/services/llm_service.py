@@ -50,16 +50,8 @@ class LLMService:
     @staticmethod
     def format_services_for_llm(services: List[Service]) -> str:
         """
-        Formats a list of services into a structured string for use in the LLM Prompt
-
-        Args:
-            services (List[Service]): list of services to include
-
-        Returns:
-            str: a formatted string describing the services.
-
-        Raises:
-             ValueError: if the list is empty
+        Converts services into a clean JSON string for LLM consumption.
+        Only includes fields relevant for the recommendation.
         """
         if not services:
             raise ValueError("No services are available to format for LLM.")
