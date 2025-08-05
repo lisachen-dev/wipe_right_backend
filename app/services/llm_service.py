@@ -3,6 +3,7 @@ from textwrap import dedent
 from typing import List, Optional
 
 import openai
+from openai.types.chat import ChatCompletionUserMessageParam
 
 from app.config import (
     OPENAI_API_KEY,
@@ -26,18 +27,16 @@ class LLMService:
 
     def call_llm(self, prompt: str) -> str:
         """
-        Call LLM with prompt
-
-        Args:
-            prompt: Combined prompt with instructions and user message
-
-        Returns:
-            Generated text response
+        Call LLM with a single user provided prompt
         """
+        messages: List[ChatCompletionUserMessageParam] = [
+            {"role": "user", "content": prompt}
+        ]
+
         try:
             response = self.client.chat.completions.create(
                 model="gpt-4.1-nano",
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 temperature=0.3,
                 max_tokens=500,
             )
