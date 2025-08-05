@@ -1,9 +1,14 @@
 import logging
-import os
+from textwrap import dedent
 from typing import List, Optional
 
 import openai
 
+from app.config import (
+    OPENAI_API_KEY,
+    OPENAI_SYSTEM_PROMPT_FOOTER,
+    OPENAI_SYSTEM_PROMPT_HEADER,
+)
 from app.models import Service
 from app.models.chat import ChatRequest
 
@@ -13,7 +18,7 @@ logger = logging.getLogger(__name__)
 class LLMService:
     def __init__(self, api_key: Optional[str] = None):
         """Initialize LLM service with OpenAI client"""
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.api_key = api_key or OPENAI_API_KEY
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
 
@@ -45,21 +50,41 @@ class LLMService:
 
     @staticmethod
     def format_services_for_llm(services: List[Service]) -> str:
-        service_string_for_llm = ""
+        """
+        Formats a list of services into a structured string for use in the LLM Prompt
 
+        Args:
+            services (List[Service]): list of services to include
+
+        Returns:
+            str: a formatted string describing the services.
+
+        Raises:
+             ValueError: if the list is empty
+        """
         if not services:
             raise ValueError("No services are available to format for LLM.")
 
+        service_lines = []
         for service in services:
-            for key, val in service.model_dump().items():
-                service_string_for_llm += f"{key}: {val}\n"
-            service_string_for_llm += "---\n"
-        heading = "AVAILABLE SERVICES:"
+            service_text_block = "\n".join(
+                f"{key}: {val}" for key, val in service.model_dump().items()
+            )
+            service_lines.append(f"{service_text_block}\n---")
 
-        return f"{heading}\n{service_string_for_llm}"
+        return "AVAILABLE SERVICES:\n" + "\n".join(service_lines)
 
     @staticmethod
     def build_conversation_context(chat_request: ChatRequest) -> str:
+        """
+        Generates conversation context to use for the LLM Prompt based on chat history
+
+        Args:
+            chat_request (ChatRequest): contains message history and the current user message to LLM
+
+        Returns:
+            str: a formatted string with the past message (omits if not available) and the current user message
+        """
         context = []
         for message in chat_request.conversation_history:
             context.append(f'User: "{message.user}"\nBumi: "{message.bumi}"')
@@ -67,6 +92,35 @@ class LLMService:
         history_context = "\n".join(context)
         current_context = f'User: "{chat_request.message}"'
 
-        result_context = f"CONVERSATION HISTORY:\n{history_context}\n\nCURRENT REQUEST: {current_context}"
+        return (
+            "CONVERSATION HISTORY:\n"
+            + history_context
+            + "\n\nCURRENT REQUEST: "
+            + current_context
+            if history_context
+            else "CURRENT REQUEST: " + current_context
+        )
 
-        return result_context
+    @staticmethod
+    def build_prompt(services: List[Service], chat_request: ChatRequest) -> str:
+        """
+        Constructs the full prompt to send to the LLM (instructions, services, conversation history and the user's current request.
+
+        Args:
+            services (List[Service]): services to include in the prompt.
+            chat_request (ChatRequest): contains convo history and current message
+
+        Returns:
+            str: The complete prompt for the LLM
+        """
+        prompt_header = OPENAI_SYSTEM_PROMPT_HEADER
+        service_context = LLMService.format_services_for_llm(services)
+        conversation_context = LLMService.build_conversation_context(chat_request)
+        prompt_footer = OPENAI_SYSTEM_PROMPT_FOOTER
+        return dedent(f"""{prompt_header}
+
+        {service_context}
+
+        {conversation_context}
+
+        {prompt_footer}""")
