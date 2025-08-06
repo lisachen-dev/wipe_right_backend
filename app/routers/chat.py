@@ -2,6 +2,7 @@ import json
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException
+from openai import OpenAIError
 from sqlmodel import Session
 
 from app.db.session import get_session
@@ -40,8 +41,18 @@ async def chat_with_bumi(
     # send the prompt to the LLM
     try:
         ai_response = llm_service.call_llm(prompt)
+
+    except OpenAIError as e:
+        logger.exception("[LOG] LLM call failed due to OpenAI API issue.")
+        raise HTTPException(status_code=500, detail="OpenAI API call failed.")
+
+    except ValueError as e:
+        logger.exception("[LOG] LLM prompt building or input error.")
+        raise HTTPException(status_code=400, detail="Bad request sent to LLM.")
+
     except Exception as e:
-        logger.exception("[LOG] Error while calling LLM")
+        logger.exception("[LOG] Unexpected error while calling LLM.")
+        raise HTTPException(status_code=500, detail="Internal server error.")
 
     # convert json to python object
     try:
