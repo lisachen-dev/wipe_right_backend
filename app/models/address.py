@@ -15,6 +15,8 @@ class AddressBase(SQLModel):
     city: str
     state: str
     zip: str
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class Address(AddressBase, table=True):
