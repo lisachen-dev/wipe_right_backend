@@ -1,6 +1,5 @@
 import json
 import logging
-from textwrap import dedent
 from typing import List, Optional
 
 import openai
@@ -28,13 +27,12 @@ class LLMService:
 
         self.client = openai.OpenAI(api_key=self.api_key)
 
-    def call_llm(self, prompt: str) -> dict:
+    def call_llm(
+        self, messages: List[ChatCompletionUserMessageParam]
+    ) -> ChatCompletionUserMessageParam:
         """
         Call LLM with a single user provided prompt
         """
-        messages: List[ChatCompletionUserMessageParam] = [
-            {"role": "user", "content": prompt}
-        ]
 
         try:
             response = self.client.chat.completions.create(
@@ -101,25 +99,34 @@ class LLMService:
         )
 
     @staticmethod
-    def build_prompt(services: List[Service], chat_request: ChatRequest) -> str:
+    def build_prompt(
+        services: List[Service], chat_request: ChatRequest
+    ) -> List[ChatCompletionUserMessageParam]:
         """
-        Constructs the full prompt to send to the LLM (instructions, services, conversation history and the user's current request.
-
-        Args:
-            services (List[Service]): services to include in the prompt.
-            chat_request (ChatRequest): contains convo history and current message
-
-        Returns:
-            str: The complete prompt for the LLM
+        Builds the structured messages array for OpenAI's ChatCompletion API using proper roles.
+        Includes: one 'system' message, conversation history, and the user's current message.
         """
-        prompt_header = OPENAI_SYSTEM_PROMPT_HEADER
-        service_context = LLMService.format_services_for_llm(services)
-        conversation_context = LLMService.build_conversation_context(chat_request)
-        prompt_footer = OPENAI_SYSTEM_PROMPT_FOOTER
-        return dedent(f"""{prompt_header}
 
-        {service_context}
+        system_prompt = "\n\n".join(
+            [
+                OPENAI_SYSTEM_PROMPT_HEADER.strip(),
+                LLMService.format_services_for_llm(services),
+                OPENAI_SYSTEM_PROMPT_FOOTER.strip(),
+            ]
+        )
 
-        {conversation_context}
+        messages: List[ChatCompletionUserMessageParam] = [
+            {"role": "system", "content": system_prompt}
+        ]
 
-        {prompt_footer}""")
+        # Add chat history using user and bumi roles
+        for msg in chat_request.conversation_history:
+            if msg.user:
+                messages.append({"role": "user", "content": msg.user})
+            if msg.bumi:
+                messages.append({"role": "bumi", "content": msg.bumi})
+
+        # Add current user message
+        messages.append({"role": "user", "content": chat_request.message})
+
+        return messages
