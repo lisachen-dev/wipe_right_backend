@@ -93,4 +93,11 @@ Remember:
 - Maximum 3 service recommendations per response
 - Be specific in clarification questions
 - Consider conversation flow and context
+
+STRICT VALIDATION RULES:
+- Use exactly one of the two response formats: "recommend" OR "clarify"
+- NEVER include a clarification_question if action is "recommend"
+- NEVER include service_ids if action is "clarify"
+- NEVER return a "recommend" action if you have zero matching services
+- NEVER recommend unrelated services (e.g. do not suggest cleaning if the request is about plumbing)
 """

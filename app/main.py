@@ -22,7 +22,7 @@ from app.routers import (
 )
 
 logging.basicConfig(
-    level=logging.INFO,  # change to DEBUG if you want more logs
+    level=logging.DEBUG,  # change to INFO if you want less logs
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
 )
 

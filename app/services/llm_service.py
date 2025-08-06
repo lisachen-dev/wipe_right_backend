@@ -1,8 +1,11 @@
+import json
 import logging
 from textwrap import dedent
 from typing import List, Optional
 
 import openai
+from fastapi import HTTPException
+from openai import OpenAIError
 from openai.types.chat import ChatCompletionUserMessageParam
 
 from app.config import (
@@ -25,7 +28,7 @@ class LLMService:
 
         self.client = openai.OpenAI(api_key=self.api_key)
 
-    def call_llm(self, prompt: str) -> str:
+    def call_llm(self, prompt: str) -> dict:
         """
         Call LLM with a single user provided prompt
         """
@@ -40,12 +43,17 @@ class LLMService:
                 temperature=0.3,
                 max_tokens=500,
             )
+            raw_response = response.choices[0].message.content
+            logger.debug(f"Raw LLM response: {raw_response}")
+            return json.loads(raw_response)
 
-            return response.choices[0].message.content
+        except json.JSONDecodeError as e:
+            logger.error(f"Bumi response error: {e.msg}")
+            raise HTTPException(status_code=500, detail=f"Bumi response error: {e.msg}")
 
-        except Exception as e:
-            logger.error(f"LLM API error: {e}")
-            raise
+        except OpenAIError as e:
+            logger.exception("OpenAI API error occurred")
+            raise HTTPException(status_code=500, detail="OpenAI API call failed.")
 
     @staticmethod
     def format_services_for_llm(services: List[Service]) -> str:
