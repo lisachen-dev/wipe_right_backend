@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select, text
 
 from app.db.session import get_session
-from app.models.address import Address
+from app.models.address import Address, AddressRead
 from app.models.booking import (
     Booking,
     BookingBase,
@@ -13,7 +13,6 @@ from app.models.booking import (
     BookingDetails,
     BookingStatusUpdate,
     BookingUpdate,
-    CustomerAddressResponse,
 )
 from app.models.customer import Customer
 from app.models.provider import Provider
@@ -84,11 +83,14 @@ async def read_bookings_details(
                 Customer.phone_number.label("customer_phone_number"),
                 Provider.company_name,
                 Provider.phone_number.label("provider_phone_number"),
+                Address.id.label("address_id"),
                 Address.street_address_1,
                 Address.street_address_2,
                 Address.city,
                 Address.state,
                 Address.zip,
+                Address.latitude,
+                Address.longitude,
             )
             .join(Customer, Customer.id == Booking.customer_id)
             .join(Provider, Provider.id == Booking.provider_id)
@@ -109,12 +111,15 @@ async def read_bookings_details(
             provider_company_name=result.company_name,
             provider_phone_number=result.provider_phone_number,
             customer_phone_number=result.customer_phone_number,
-            customer_address=CustomerAddressResponse(
+            customer_address=AddressRead(
+                id=result.address_id,
                 street_address_1=result.street_address_1,
                 street_address_2=result.street_address_2,
                 city=result.city,
                 state=result.state,
                 zip=result.zip,
+                latitude=result.latitude,
+                longitude=result.longitude,
             ),
         )
 
