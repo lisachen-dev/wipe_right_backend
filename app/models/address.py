@@ -41,8 +41,13 @@ class Address(AddressBase, table=True):
     )
 
 
-class AddressCreate(AddressBase):
+class AddressCreate(SQLModel):
     customer_id: UUID
+    street_address_1: str
+    street_address_2: Optional[str] = None
+    city: str
+    state: str
+    zip: str
 
 
 class AddressUpdate(SQLModel):
