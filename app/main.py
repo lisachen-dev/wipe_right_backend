@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -20,6 +22,12 @@ from app.routers import (
     user_profile,
 )
 
+logging.basicConfig(
+    level=logging.DEBUG,  # change to INFO if you want less logs
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+)
+
+logging.info("FastAPI app is starting...")
 app = FastAPI()
 router = APIRouter()
 

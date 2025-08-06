@@ -2,6 +2,7 @@ import uuid
 from typing import Any, List, Type
 
 from fastapi import HTTPException
+from sqlalchemy.orm import selectinload
 from sqlmodel import Session, SQLModel, select
 
 
@@ -11,6 +12,16 @@ def get_all_by_field(
 ) -> List[SQLModel]:
     field = getattr(model, field_name)
     statement = select(model).where(field == value)
+    return session.exec(statement).all()
+
+
+# GET ALL BY IDS WITH OPTIONS
+def get_all_by_ids_with_options(
+    session: Session, model: Type[SQLModel], ids: list[Any], relationship_attr: Any
+):
+    statement = (
+        select(model).where(model.id.in_(ids)).options(selectinload(relationship_attr))
+    )
     return session.exec(statement).all()
 
 

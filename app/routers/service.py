@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 
 from app.db.session import get_session
 from app.models.service import Service, ServiceCreate, ServiceEnum, ServiceUpdate
-from app.services.db_service import get_all_services
+from app.services.db_access import get_all_services
 from app.utils.crud_helpers import create_one, delete_one, get_one, update_one
 
 router = APIRouter(
@@ -63,7 +63,7 @@ async def read_service_category(
 async def create_service(
     service: ServiceCreate, session: Session = Depends(get_session)
 ):
-    return create_one(session, Service, service.dict())
+    return create_one(session, Service, service.model_dump())
 
 
 # UPDATE a service
@@ -74,7 +74,7 @@ async def update_service(
     session: Session = Depends(get_session),
 ):
     return update_one(
-        session, Service, service_id, update_data.dict(exclude_unset=True)
+        session, Service, service_id, update_data.model_dump(exclude_unset=True)
     )
 
 
