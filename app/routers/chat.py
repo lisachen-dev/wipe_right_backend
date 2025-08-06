@@ -27,25 +27,35 @@ async def chat_with_bumi(
     session: Session = Depends(get_session),
     llm_service: LLMService = Depends(lambda: LLMService()),
 ):
+    logger.info("[LOG] Incoming message: %s", request.message)
+
     # pull all service data
     all_services = get_all_services(session)
+    logger.info("[LOG] Retrieved %d services from DB", len(all_services))
 
     # build full prompt with services and chat history
     prompt = LLMService.build_prompt(services=all_services, chat_request=request)
+    logger.debug("[LOG] Built prompt:\n%s", prompt)
 
     # send the prompt to the LLM
-    ai_response = llm_service.call_llm(prompt)
-
     try:
-        # convert json to python object
+        ai_response = llm_service.call_llm(prompt)
+    except Exception as e:
+        logger.exception("[LOG] Error while calling LLM")
+
+    # convert json to python object
+    try:
         parsed_ai_response = json.loads(ai_response)
+        logger.debug("[LOG] Parsed LLM response: %s", parsed_ai_response)
 
     except Exception as e:
-        logger.exception("Unexpected error parsing LLM response")
+        logger.exception("[LOG] Unexpected error parsing LLM response")
         raise HTTPException(status_code=500, detail=f"AI response error: {str(e)}")
 
     # parse selected services
     service_ids = parsed_ai_response.get("service_ids", [])
+    logger.info("[LOG] Service IDs returned: %s", service_ids)
+
     services = get_all_by_ids_with_options(
         session=session,
         model=Service,
@@ -53,7 +63,10 @@ async def chat_with_bumi(
         relationship_attr=Service.provider,
     )
 
+    logger.info("Loaded %d services from IDs", len(services))
+
     recommended_services = map_services_to_recommendations(services, session)
+    logger.info("[LOG] Mapped recommended services: %s", recommended_services)
 
     return ChatResponse(
         action=parsed_ai_response.get("action", "recommend"),

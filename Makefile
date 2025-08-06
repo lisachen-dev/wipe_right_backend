@@ -12,3 +12,6 @@ lint-all:
 # Execution
 run:
 	uv run uvicorn app.main:app --reload
+
+run-log:
+	uv run uvicorn app.main:app --reload --log-level info
