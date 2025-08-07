@@ -124,7 +124,7 @@ class LLMService:
             if msg.user:
                 messages.append({"role": "user", "content": msg.user})
             if msg.bumi:
-                messages.append({"role": "bumi", "content": msg.bumi})
+                messages.append({"role": "assistant", "content": msg.bumi})
 
         # Add current user message
         messages.append({"role": "user", "content": chat_request.message})
