@@ -14,6 +14,7 @@ from app.utils.crud_helpers import (
     get_one,
     update_one,
 )
+from app.utils.geocoding import geocode_address
 from app.utils.user_helpers import get_user_scoped_record
 
 router = APIRouter(
@@ -45,8 +46,26 @@ def read_address(address_id: UUID, session: Session = Depends(get_session)):
 
 # CREATE
 @router.post("/", response_model=Address)
-def create_address(address: AddressCreate, session: Session = Depends(get_session)):
-    return create_one(session, Address, address.dict())
+async def create_address(
+    address: AddressCreate,
+    supabase_user_id: UUID = Depends(get_current_user_id),
+    session: Session = Depends(get_session),
+):
+    db_customer = get_user_scoped_record(session, Customer, supabase_user_id)
+    if not db_customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+
+    full_address = (
+        f"{address.street_address_1}, {address.city}, {address.state} {address.zip}"
+    )
+    lat, lon = await geocode_address(full_address)
+
+    data = address.model_dump()
+    data["customer_id"] = db_customer.id
+    data["latitude"] = lat
+    data["longitude"] = lon
+
+    return create_one(session, Address, data)
 
 
 # UPDATE
