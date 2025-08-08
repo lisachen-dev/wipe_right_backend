@@ -1,11 +1,13 @@
 import logging
 
 import httpx
+from async_lru import alru_cache
 from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
 
 
+@alru_cache(maxsize=1000)  # Cache results in memory
 async def geocode_address(address_string: str) -> tuple[float | None, float | None]:
     url = "https://nominatim.openstreetmap.org/search"
     params = {"q": address_string, "format": "json", "limit": 1}
