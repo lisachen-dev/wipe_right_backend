@@ -73,6 +73,7 @@ async def create_address(
 def update_address(
     address_id: UUID,
     update_data: AddressUpdate,
+    supabase_user_id: UUID = Depends(get_current_user_id),
     session: Session = Depends(get_session),
 ):
     return update_one(

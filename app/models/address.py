@@ -51,11 +51,11 @@ class AddressCreate(SQLModel):
 
 
 class AddressUpdate(SQLModel):
-    street_address_1: Optional[str] = None
+    street_address_1: str
     street_address_2: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    zip: Optional[str] = None
+    city: str
+    state: str
+    zip: str
 
 
 class AddressRead(AddressBase):
