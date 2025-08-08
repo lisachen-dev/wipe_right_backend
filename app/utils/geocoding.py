@@ -1,4 +1,9 @@
+import logging
+
 import httpx
+from fastapi import HTTPException
+
+logger = logging.getLogger(__name__)
 
 
 async def geocode_address(address_string: str) -> tuple[float | None, float | None]:
@@ -13,8 +18,9 @@ async def geocode_address(address_string: str) -> tuple[float | None, float | No
             response = await client.get(url, params=params, headers=headers)
             response.raise_for_status()
             data = response.json()
-    except Exception:
-        return None, None
+    except httpx.RequestError as e:
+        logger.error(f"Geocoding request failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Geocoding response error: {e}")
 
     if data:
         lat = float(data[0]["lat"])
