@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
@@ -19,17 +20,23 @@ class ChatRequest(BaseModel):
     conversation_history: List[ConversationMessage] = Field(
         default=[], description="Previous conversation messages"
     )
+    image: Optional[str] = Field(
+        default=None,
+        description="Base64 encoded image data (optional, for vision functionality)",
+    )
 
 
 class ServiceRecommendation(BaseModel):
     id: str
     name: str
     provider: str
+    provider_id: str
     price: float
     rating: float
     description: str
     category: str
     duration: int
+    available_time: Optional[datetime] = None
 
 
 class ChatResponse(BaseModel):
