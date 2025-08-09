@@ -1,11 +1,12 @@
+import base64
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlmodel import Session
 
 from app.db.session import get_session
 from app.models import Service
-from app.models.chat import ActionType, ChatRequest, ChatResponse
+from app.models.chat import ActionType, ChatRequest, ChatResponse, ConversationMessage
 from app.services.db_access import get_all_services
 from app.services.llm_service import LLMService
 from app.services.transformers import map_services_to_recommendations
@@ -26,8 +27,60 @@ async def chat_with_bumi(
     session: Session = Depends(get_session),
     llm_service: LLMService = Depends(lambda: LLMService()),
 ):
+    """Main chat endpoint for JSON requests"""
     logger.info("[LOG] Incoming message: %s", request.message)
+    return await _process_chat_request(request, session, llm_service)
 
+
+@router.post("/chat/image", response_model=ChatResponse)
+async def chat_with_bumi_image(
+    message: str = Form(..., description="The user's current message"),
+    conversation_history: str = Form(
+        default="[]", description="JSON string of conversation history"
+    ),
+    image: UploadFile = File(..., description="Image file for vision functionality"),
+    session: Session = Depends(get_session),
+    llm_service: LLMService = Depends(lambda: LLMService()),
+):
+    """Chat endpoint with image upload for vision functionality"""
+    logger.info("[LOG] Incoming image message: %s", message)
+
+    # Parse conversation history
+    try:
+        import json
+
+        history_data = json.loads(conversation_history)
+        conversation_messages = [ConversationMessage(**msg) for msg in history_data]
+    except (json.JSONDecodeError, ValueError) as e:
+        logger.warning(f"Invalid conversation history format: {e}")
+        conversation_messages = []
+
+    # Handle image upload
+    try:
+        # Read and encode image
+        image_data = await image.read()
+        image_base64 = base64.b64encode(image_data).decode("utf-8")
+        logger.info(
+            f"[LOG] Image uploaded: {image.filename}, size: {len(image_data)} bytes"
+        )
+    except Exception as e:
+        logger.error(f"[LOG] Error processing image: {e}")
+        raise HTTPException(status_code=400, detail="Error processing uploaded image")
+
+    # Create ChatRequest object
+    request = ChatRequest(
+        message=message, conversation_history=conversation_messages, image=image_base64
+    )
+
+    return await _process_chat_request(request, session, llm_service)
+
+
+async def _process_chat_request(
+    request: ChatRequest,
+    session: Session,
+    llm_service: LLMService,
+) -> ChatResponse:
+    """Shared logic for processing chat requests"""
     # pull all service data
     all_services = get_all_services(session)
     logger.info("[LOG] Retrieved %d services from DB", len(all_services))
@@ -42,11 +95,11 @@ async def chat_with_bumi(
         logger.info("[LLM RAW OUTPUT] %s", ai_response)
         logger.info("[LOG] Bumi action: %s", ai_response.get("action"))
 
-    except ValueError as e:
+    except ValueError:
         logger.exception("[LOG] LLM prompt building or input error.")
         raise HTTPException(status_code=400, detail="Bad request sent to LLM.")
 
-    except Exception as e:
+    except Exception:
         logger.exception("[LOG] Unexpected error while calling LLM.")
         raise HTTPException(status_code=500, detail="Internal server error.")
 
