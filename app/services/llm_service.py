@@ -1,7 +1,7 @@
 import base64
 import json
 import logging
-from typing import List, Optional, Union
+from typing import List, Optional
 
 import openai
 from fastapi import HTTPException
@@ -50,7 +50,7 @@ class LLMService:
             logger.error(f"Bumi response error: {e.msg}")
             raise HTTPException(status_code=500, detail=f"Bumi response error: {e.msg}")
 
-        except OpenAIError as e:
+        except OpenAIError:
             logger.exception("OpenAI API error occurred")
             raise HTTPException(status_code=500, detail="OpenAI API call failed.")
 

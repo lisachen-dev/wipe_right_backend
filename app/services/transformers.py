@@ -1,11 +1,10 @@
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from sqlmodel import Session, select
+from sqlmodel import Session
 
-from app.models import Booking, Provider, Review, Service
+from app.models import Provider, Review, Service
 from app.models.chat import ServiceRecommendation
-from app.models.enums import StatusEnum
 from app.services.db_access import get_all_reviews_by_provider
 
 

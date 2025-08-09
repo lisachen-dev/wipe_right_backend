@@ -1,6 +1,5 @@
 import base64
 import logging
-from io import BytesIO
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlmodel import Session
@@ -96,11 +95,11 @@ async def _process_chat_request(
         logger.info("[LLM RAW OUTPUT] %s", ai_response)
         logger.info("[LOG] Bumi action: %s", ai_response.get("action"))
 
-    except ValueError as e:
+    except ValueError:
         logger.exception("[LOG] LLM prompt building or input error.")
         raise HTTPException(status_code=400, detail="Bad request sent to LLM.")
 
-    except Exception as e:
+    except Exception:
         logger.exception("[LOG] Unexpected error while calling LLM.")
         raise HTTPException(status_code=500, detail="Internal server error.")
 
