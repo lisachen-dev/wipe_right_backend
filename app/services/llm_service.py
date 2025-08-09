@@ -43,8 +43,50 @@ class LLMService:
                 max_tokens=500,
             )
             raw_response = response.choices[0].message.content
-            logger.debug(f"Raw LLM response: {raw_response}")
-            return json.loads(raw_response)
+            logger.info(f"Raw LLM response: {raw_response}")
+
+            # Try to parse as JSON first
+            try:
+                parsed_response = json.loads(raw_response)
+                # Clean up service IDs if present
+                if "service_ids" in parsed_response and parsed_response["service_ids"]:
+                    parsed_response["service_ids"] = self._clean_service_ids(
+                        parsed_response["service_ids"]
+                    )
+                return parsed_response
+            except json.JSONDecodeError:
+                # If JSON parsing fails, try to extract JSON from the response
+                logger.warning(
+                    "LLM returned non-JSON response, attempting to extract JSON"
+                )
+
+                # Look for JSON-like content in the response
+                import re
+
+                json_match = re.search(r"\{.*\}", raw_response, re.DOTALL)
+                if json_match:
+                    try:
+                        parsed_response = json.loads(json_match.group())
+                        # Clean up service IDs if present
+                        if (
+                            "service_ids" in parsed_response
+                            and parsed_response["service_ids"]
+                        ):
+                            parsed_response["service_ids"] = self._clean_service_ids(
+                                parsed_response["service_ids"]
+                            )
+                        return parsed_response
+                    except json.JSONDecodeError:
+                        pass
+
+                # If we can't extract JSON, create a fallback response
+                logger.warning("Could not extract JSON, creating fallback response")
+                return {
+                    "action": "clarify",
+                    "message": "I understand you need help! Let me get some more details to better assist you.",
+                    "service_ids": [],
+                    "clarification_question": "Could you tell me more specifically what kind of help you need?",
+                }
 
         except json.JSONDecodeError as e:
             logger.error(f"Bumi response error: {e.msg}")
@@ -53,6 +95,35 @@ class LLMService:
         except OpenAIError:
             logger.exception("OpenAI API error occurred")
             raise HTTPException(status_code=500, detail="OpenAI API call failed.")
+
+    def _clean_service_ids(self, service_ids: List[str]) -> List[str]:
+        """
+        Clean up service IDs by removing common prefixes that LLM might add
+        """
+        cleaned_ids = []
+        for service_id in service_ids:
+            # Remove common prefixes like 'svc_', 'service_', etc.
+            cleaned_id = service_id
+            for prefix in ["svc_", "service_", "id_"]:
+                if cleaned_id.startswith(prefix):
+                    cleaned_id = cleaned_id[len(prefix) :]
+                    break
+
+            # Validate that it looks like a UUID
+            import re
+
+            uuid_pattern = re.compile(
+                r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                re.IGNORECASE,
+            )
+            if uuid_pattern.match(cleaned_id):
+                cleaned_ids.append(cleaned_id)
+            else:
+                logger.warning(
+                    f"Invalid service ID format: {service_id} -> {cleaned_id}"
+                )
+
+        return cleaned_ids
 
     @staticmethod
     def format_services_for_llm(services: List[Service]) -> str:

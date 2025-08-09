@@ -87,7 +87,7 @@ async def _process_chat_request(
 
     # build full prompt with services and chat history
     prompt = LLMService.build_prompt(services=all_services, chat_request=request)
-    logger.debug("[LOG] Built prompt:\n%s", prompt)
+    logger.info("[LOG] Built prompt:\n%s", prompt)
 
     # send the prompt to the LLM
     try:
@@ -108,21 +108,39 @@ async def _process_chat_request(
     logger.info("[LOG] Service IDs returned: %s", service_ids)
 
     action = ai_response.get("action", "recommend")
-    if action == "recommend" and not service_ids:
+
+    # Filter out invalid service IDs and check if we have any valid ones
+    if action == "recommend" and service_ids:
+        # Try to get services and see how many are valid
+        services = get_all_by_ids_with_options(
+            session=session,
+            model=Service,
+            ids=service_ids,
+            relationship_attr=Service.provider,
+        )
+
+        # If no valid services found, fall back to clarification
+        if not services:
+            logger.warning(
+                "[LOG] LLM recommended invalid service IDs, falling back to clarification"
+            )
+            return ChatResponse(
+                action=ActionType.CLARIFY,
+                ai_message="I'd love to help you with that! Let me get some more details to better assist you.",
+                services=[],
+                clarification_question="Could you tell me more specifically what kind of help you need?",
+            )
+    elif action == "recommend" and not service_ids:
         logger.warning("[LOG] action was 'recommend' but no services were returned")
         return ChatResponse(
             action=ActionType.CLARIFY,
-            ai_message="Ruff! I couldn't find a matching service, but I’d love to help!",
+            ai_message="Ruff! I couldn't find a matching service, but I'd love to help!",
             services=[],
             clarification_question="Can you tell me more about what kind of help you need?",
         )
-
-    services = get_all_by_ids_with_options(
-        session=session,
-        model=Service,
-        ids=service_ids,
-        relationship_attr=Service.provider,
-    )
+    else:
+        # For clarify actions, no services needed
+        services = []
 
     logger.info("Loaded %d services from IDs", len(services))
 
