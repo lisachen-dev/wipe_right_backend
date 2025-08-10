@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 from app.routers import (
     address,
     booking,
+    booking_ai,
     chat,
     coupon,
     customer,
@@ -23,7 +24,7 @@ from app.routers import (
 )
 
 logging.basicConfig(
-    level=logging.DEBUG,  # change to INFO if you want less logs
+    level=logging.INFO,  # changed from DEBUG to reduce logging spam
     format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
 )
 
@@ -45,6 +46,7 @@ app.add_middleware(
 app.include_router(address.router)
 app.include_router(booking.router)
 app.include_router(chat.router)
+app.include_router(booking_ai.router)
 app.include_router(customer.router)
 app.include_router(inventory_item.router)
 app.include_router(provider.router)
