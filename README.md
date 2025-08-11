@@ -1,4 +1,4 @@
-# 🧼 Welcome to Wipe Ripe – Backend (FastAPI)
+# 🧼 Welcome to Wipe Right – Backend (FastAPI)
 
 This is the backend API for the Wipe Right project, built with **FastAPI**, **SQLModel**, and **Supabase**. It supports customer and provider accounts, service listings, bookings, and more.
 
