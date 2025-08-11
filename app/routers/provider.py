@@ -145,16 +145,20 @@ async def get_provider_details(
 async def read_providers_category_name(
     category_name: str, session: Session = Depends(get_session)
 ):
+    # Convert public-facing slug to DB enum NAME (e.g. "housecleaning" -> "HOUSE_CLEANING")
     category_enum_val = validate_category(category_name)
 
     try:
         if not category_enum_val:
             raise HTTPException(status_code=400, detail="category name not found")
 
+        # Join providers->services and filter by the Service.category enum NAME.
+        # distinct() ensures a provider with many matching services appears once.
         results = session.exec(
             select(Provider)
+            .join(Service, Service.provider_id == Provider.id)
             .options(selectinload(Provider.services))
-            .filter(Service.category == category_enum_val)
+            .where(Service.category == category_enum_val)
             .distinct()
         )
 
