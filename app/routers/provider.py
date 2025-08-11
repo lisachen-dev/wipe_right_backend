@@ -141,7 +141,7 @@ async def get_provider_details(
 
 
 # PUBLIC Get all providers
-@router.get("/all/{category_name}", response_model=list[ProviderPublicRead])
+@router.get("/all/{category_name}", response_model=list[ProviderResponseDetail])
 async def read_providers_category_name(
     category_name: str, session: Session = Depends(get_session)
 ):
@@ -154,15 +154,51 @@ async def read_providers_category_name(
 
         # Join providers->services and filter by the Service.category enum NAME.
         # distinct() ensures a provider with many matching services appears once.
-        results = session.exec(
+        providers_result = session.exec(
             select(Provider)
             .join(Service, Service.provider_id == Provider.id)
             .options(selectinload(Provider.services))
             .where(Service.category == category_enum_val)
             .distinct()
-        )
+        ).all()
 
-        return [ProviderPublicRead.model_validate(provider) for provider in results]
+        if not providers_result:
+            return []
+
+        provider_ids = [p.id for p in providers_result]
+        aggregates = session.exec(
+            select(
+                Review.provider_id,
+                func.count(Review.id).label("count"),
+                func.avg(Review.rating).label("average"),
+            )
+            .where(Review.provider_id.in_(provider_ids))
+            .group_by(Review.provider_id)
+        ).all()
+
+        agg_map = {row.provider_id: row for row in aggregates}
+
+        # Build enriched response
+        response: list[ProviderResponseDetail] = []
+        for provider in providers_result:
+            agg = agg_map.get(provider.id)
+            response.append(
+                ProviderResponseDetail(
+                    id=provider.id,
+                    first_name=provider.first_name,
+                    last_name=provider.last_name,
+                    company_name=provider.company_name,
+                    phone_number=provider.phone_number,
+                    services=provider.services,
+                    reviews=[],
+                    review_count=(agg.count if agg else 0),
+                    average_rating=(
+                        float(agg.average) if agg and agg.average is not None else None
+                    ),
+                )
+            )
+
+        return response
 
     except Exception as e:
         print(f"Exception: {e}")
