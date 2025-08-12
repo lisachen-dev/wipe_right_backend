@@ -1,9 +1,10 @@
 import stripe
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app import config
 from app.db.session import get_session
+from app.models.coupon import Coupon
 from app.models.service import Service
 from app.models.stripe_model import (
     PaymentIntentCreateRequest,
@@ -29,8 +30,20 @@ async def create_payment_request(
 ):
     try:
         service: Service = get_one(session, Service, data.service_id)
+        price = service.pricing
+
+        if data.coupon_code:
+            coupon = session.exec(
+                select(Coupon).where(Coupon.coupon_code == data.coupon_code)
+            ).first()
+
+            if not coupon:
+                raise HTTPException(status_code=400, detail="Invalid coupon")
+
+            price = service.pricing * (1 - coupon.discount_value / 100)
+
         payment_intent = stripe.PaymentIntent.create(
-            amount=int(service.pricing * 100), currency="usd"
+            amount=int(price * 100), currency="usd"
         )
         return {"client_secret": payment_intent.client_secret}
 
