@@ -9,10 +9,9 @@ This is the backend API for the Wipe Right project, built with **FastAPI**, **SQ
 
 ## 👥 Contributors
 
-- **Lisa Chen** – Backend Developer (Supabase Auth and Google Auth integration, CRUD APIs, Stripe integration, linting &
+- **Lisa Chen** – Backend Lead Developer (Supabase Auth and Google Auth integration, CRUD APIs, Stripe integration, linting &
   code style enforcement, AI integration, logging, project scaffolding)
-  scaffolding)
-- **Nicole Magallanes** – Backend Developer (models, relationships, testing, docs)
+- **Nicole Magallanes** – Backend Developer  (models, CRUD APIs, relationships, Geolocation API)
 - **Luis Arevalo** – Backend Developer (CRUD APIs, debugging, setup support)
 - **Thomas Nguyen** – Project Lead & Frontend Lead (UX/UI design, guided scope, coordination, light backend
   contributions)
